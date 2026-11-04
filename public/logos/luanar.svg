@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="luanarGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14532D" />
+      <stop offset="100%" stop-color="#052e16" />
+    </linearGradient>
+    <linearGradient id="luanarGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#CA8A04" />
+    </linearGradient>
+  </defs>
+  <!-- Shield Background -->
+  <path d="M60 12 L100 24 C100 68 84 96 60 108 C36 96 20 68 20 24 Z" fill="url(#luanarGreen)" stroke="url(#luanarGold)" stroke-width="3" />
+  <!-- Agriculture Maize / Sprout Motif -->
+  <path d="M60 72 C60 50 60 38 60 32" stroke="url(#luanarGold)" stroke-width="3" stroke-linecap="round" />
+  <!-- Left Leaves -->
+  <path d="M60 56 C48 52 44 40 44 40 C44 40 56 42 60 48" fill="url(#luanarGold)" opacity="0.9" />
+  <path d="M60 44 C50 40 46 30 46 30 C46 30 57 32 60 38" fill="#86EFAC" />
+  <!-- Right Leaves -->
+  <path d="M60 52 C72 48 76 36 76 36 C76 36 64 38 60 44" fill="url(#luanarGold)" opacity="0.9" />
+  <path d="M60 40 C70 36 74 26 74 26 C74 26 63 28 60 34" fill="#86EFAC" />
+  <!-- Open Soil Furrow -->
+  <ellipse cx="60" cy="73" rx="18" ry="4" fill="#A16207" />
+  <!-- Banner -->
+  <rect x="25" y="82" width="70" height="15" rx="4" fill="url(#luanarGold)" />
+  <text x="60" y="93" font-family="Arial, sans-serif" font-weight="900" font-size="9" fill="#052e16" text-anchor="middle" letter-spacing="1">LUANAR</text>
+</svg>

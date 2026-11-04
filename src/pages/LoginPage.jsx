@@ -5,16 +5,14 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { loginSchema } from '../utils/validators';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/Button';
-import { GoogleAuthButton } from '../components/ui/GoogleAuthButton';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, loginWithGoogle } = useAuth();
+  const { login } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState(null);
-  const [googleLoading, setGoogleLoading] = useState(false);
 
   const queryRedirect = new URLSearchParams(location.search).get('redirect') || '/dashboard';
 
@@ -41,22 +39,6 @@ export default function LoginPage() {
         err.response?.data?.message ||
           'The credentials entered do not match our verified records. Please re-check your student contact details or reset your password.'
       );
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setAuthError(null);
-    setGoogleLoading(true);
-    try {
-      await loginWithGoogle();
-      navigate(queryRedirect, { replace: true });
-    } catch (err) {
-      setAuthError(
-        err.response?.data?.message ||
-          'Google sign-in could not be completed. Please try again or use your email/phone credentials.'
-      );
-    } finally {
-      setGoogleLoading(false);
     }
   };
 
@@ -123,24 +105,6 @@ export default function LoginPage() {
           </div>
         </section>
       )}
-
-      {/* Google Quick Sign-In */}
-      <div className="flex flex-col gap-4 mb-5">
-        <GoogleAuthButton
-          text="Sign in with Google"
-          loading={googleLoading}
-          onClick={handleGoogleSignIn}
-        />
-
-        <div className="relative flex items-center justify-center">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-outline-variant/40" />
-          </div>
-          <span className="relative bg-surface px-3 text-[11px] uppercase tracking-wider font-semibold text-on-surface-variant">
-            Or sign in with phone or email
-          </span>
-        </div>
-      </div>
 
       {/* Login Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">

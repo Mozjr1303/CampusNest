@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="mubasGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" />
+      <stop offset="100%" stop-color="#022c22" />
+    </linearGradient>
+    <linearGradient id="mubasGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+  </defs>
+  <!-- Circle Crest -->
+  <circle cx="60" cy="60" r="50" fill="url(#mubasGreen)" stroke="url(#mubasGold)" stroke-width="3" />
+  <circle cx="60" cy="60" r="44" fill="none" stroke="#FBBF24" stroke-width="1" stroke-dasharray="3,3" opacity="0.6" />
+  <!-- Cogwheel / Gear (Applied Sciences) -->
+  <path d="M60 28 L63 34 L70 34 L65 38 L68 45 L60 41 L52 45 L55 38 L50 34 L57 34 Z" fill="url(#mubasGold)" />
+  <!-- Business Bar Graph / Buildings -->
+  <rect x="42" y="52" width="8" height="20" rx="1.5" fill="#ffffff" opacity="0.9" />
+  <rect x="54" y="44" width="8" height="28" rx="1.5" fill="url(#mubasGold)" />
+  <rect x="66" y="48" width="8" height="24" rx="1.5" fill="#34D399" />
+  <!-- Banner -->
+  <rect x="25" y="80" width="70" height="15" rx="4" fill="url(#mubasGold)" />
+  <text x="60" y="91" font-family="Arial, sans-serif" font-weight="900" font-size="9" fill="#022c22" text-anchor="middle" letter-spacing="1">MUBAS</text>
+</svg>

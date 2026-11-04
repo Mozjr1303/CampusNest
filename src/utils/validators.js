@@ -33,6 +33,7 @@ export const loginSchema = z.object({
 });
 
 export const registerSchema = z.object({
+  role: z.enum(['student', 'landlord']).default('student'),
   fullName: z
     .string()
     .min(2, 'Full name must be at least 2 characters')
@@ -50,8 +51,11 @@ export const registerSchema = z.object({
     ),
   university: z
     .string()
-    .min(1, 'Please select your university'),
+    .optional(),
   yearOfStudy: z
+    .string()
+    .optional(),
+  propertyArea: z
     .string()
     .optional(),
   password: z
@@ -68,6 +72,14 @@ export const registerSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],
+}).refine((data) => {
+  if (data.role === 'student') {
+    return Boolean(data.university && data.university.trim().length > 0);
+  }
+  return true;
+}, {
+  message: "Please select your university",
+  path: ["university"],
 });
 
 export const viewingRequestSchema = z.object({

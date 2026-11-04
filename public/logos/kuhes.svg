@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="kuhesMaroon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#67001F" />
+      <stop offset="100%" stop-color="#3b0011" />
+    </linearGradient>
+    <linearGradient id="kuhesTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2DD4BF" />
+      <stop offset="100%" stop-color="#0F766E" />
+    </linearGradient>
+  </defs>
+  <!-- Shield Background -->
+  <path d="M60 12 L100 24 C100 68 84 96 60 108 C36 96 20 68 20 24 Z" fill="url(#kuhesMaroon)" stroke="#2DD4BF" stroke-width="3" />
+  <!-- Medical Red Cross with Gold Trim -->
+  <rect x="53" y="32" width="14" height="40" rx="3" fill="#ffffff" />
+  <rect x="40" y="45" width="40" height="14" rx="3" fill="#ffffff" />
+  <!-- Staff of Asclepius Snake Motif -->
+  <path d="M60 28 L60 76" stroke="#FBBF24" stroke-width="2.5" stroke-linecap="round" />
+  <path d="M54 36 Q66 42 60 49 Q52 56 65 62 Q60 68 55 74" fill="none" stroke="#2DD4BF" stroke-width="2.5" stroke-linecap="round" />
+  <!-- Ribbon -->
+  <rect x="25" y="82" width="70" height="15" rx="4" fill="#2DD4BF" />
+  <text x="60" y="93" font-family="Arial, sans-serif" font-weight="900" font-size="9" fill="#3b0011" text-anchor="middle" letter-spacing="1">KUHeS</text>
+</svg>

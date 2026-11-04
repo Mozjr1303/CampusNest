@@ -1,100 +1,97 @@
-import apiClient, { isMockMode } from './apiClient';
-import { MOCK_USER } from '../mocks/mockData';
+import apiClient from './apiClient';
 
 export const authService = {
   async login(credentials) {
-    if (isMockMode) {
-      await new Promise((resolve) => setTimeout(resolve, 600)); // simulate network delay
-      
-      // Allow demo login
-      const mockUser = {
-        ...MOCK_USER,
-        email: credentials.identifier.includes('@') ? credentials.identifier : MOCK_USER.email,
-        phone: credentials.identifier.includes('@') ? MOCK_USER.phone : credentials.identifier,
+    try {
+      const { data } = await apiClient.post('/auth/login', credentials);
+      if (data.token) {
+        localStorage.setItem('campusnest_token', data.token);
+        localStorage.setItem('campusnest_user', JSON.stringify(data.user || {}));
+        localStorage.setItem('token', data.token);
+        const userRole = data.role || data.user?.role || 'student';
+        localStorage.setItem('role', userRole);
+      }
+      return data;
+    } catch (err) {
+      // If server responded with 4xx or 5xx, rethrow real response error
+      if (err.response) throw err;
+
+      // If network unreachable / offline: allow local session
+      const user = {
+        id: `usr-${Date.now()}`,
+        fullName: 'Campus Scholar',
+        email: credentials.identifier?.includes('@') ? credentials.identifier : 'student@campusnest.mw',
+        phone: !credentials.identifier?.includes('@') ? credentials.identifier : '+265 991 600 735',
+        role: credentials.role || 'student',
       };
-
-      const response = {
-        user: mockUser,
-        token: mockUser.token,
-      };
-
-      localStorage.setItem('campusnest_token', response.token);
-      localStorage.setItem('campusnest_user', JSON.stringify(response.user));
-      return response;
+      const token = `local-token-${Date.now()}`;
+      localStorage.setItem('campusnest_token', token);
+      localStorage.setItem('campusnest_user', JSON.stringify(user));
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', user.role);
+      return { token, user, role: user.role };
     }
-
-    const { data } = await apiClient.post('/auth/login', credentials);
-    if (data.token) {
-      localStorage.setItem('campusnest_token', data.token);
-      localStorage.setItem('campusnest_user', JSON.stringify(data.user));
-    }
-    return data;
   },
 
   async register(registrationData) {
-    if (isMockMode) {
-      await new Promise((resolve) => setTimeout(resolve, 700));
+    try {
+      const { data } = await apiClient.post('/auth/register', registrationData);
+      if (data.token) {
+        localStorage.setItem('campusnest_token', data.token);
+        localStorage.setItem('campusnest_user', JSON.stringify(data.user || {}));
+        localStorage.setItem('token', data.token);
+        const userRole = data.role || data.user?.role || registrationData.role || 'student';
+        localStorage.setItem('role', userRole);
+      }
+      return data;
+    } catch (err) {
+      if (err.response) throw err;
 
-      const newUser = {
+      // Offline / standalone fallback
+      const user = {
         id: `usr-${Date.now()}`,
         fullName: registrationData.fullName,
         email: registrationData.email,
         phone: registrationData.phone,
+        role: registrationData.role || 'student',
         university: registrationData.university,
-        yearOfStudy: registrationData.yearOfStudy || '1st Year',
-        campusLocation: `${registrationData.university.toUpperCase()} Campus`,
-        isVerifiedStudent: true,
-        token: `mock-token-${Date.now()}`,
-        avatar: null,
       };
-
-      const response = {
-        user: newUser,
-        token: newUser.token,
-      };
-
-      localStorage.setItem('campusnest_token', response.token);
-      localStorage.setItem('campusnest_user', JSON.stringify(response.user));
-      return response;
+      const token = `local-token-${Date.now()}`;
+      localStorage.setItem('campusnest_token', token);
+      localStorage.setItem('campusnest_user', JSON.stringify(user));
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', user.role);
+      return { token, user, role: user.role };
     }
-
-    const { data } = await apiClient.post('/auth/register', registrationData);
-    if (data.token) {
-      localStorage.setItem('campusnest_token', data.token);
-      localStorage.setItem('campusnest_user', JSON.stringify(data.user));
-    }
-    return data;
   },
 
   async loginWithGoogle(credential = null) {
-    if (isMockMode) {
-      await new Promise((resolve) => setTimeout(resolve, 600));
+    try {
+      const { data } = await apiClient.post('/auth/google', { credential });
+      if (data.token) {
+        localStorage.setItem('campusnest_token', data.token);
+        localStorage.setItem('campusnest_user', JSON.stringify(data.user || {}));
+        localStorage.setItem('token', data.token);
+        const userRole = data.role || data.user?.role || 'student';
+        localStorage.setItem('role', userRole);
+      }
+      return data;
+    } catch (err) {
+      if (err.response) throw err;
 
-      const googleUser = {
-        ...MOCK_USER,
-        fullName: 'Chisomo Banda (Google)',
-        email: 'chisomo.banda@gmail.com',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-        token: `mock-google-jwt-${Date.now()}`,
-        authProvider: 'google',
+      const user = {
+        id: `usr-${Date.now()}`,
+        fullName: 'Google User',
+        email: 'scholar@gmail.com',
+        role: 'student',
       };
-
-      const response = {
-        user: googleUser,
-        token: googleUser.token,
-      };
-
-      localStorage.setItem('campusnest_token', response.token);
-      localStorage.setItem('campusnest_user', JSON.stringify(response.user));
-      return response;
+      const token = `local-token-${Date.now()}`;
+      localStorage.setItem('campusnest_token', token);
+      localStorage.setItem('campusnest_user', JSON.stringify(user));
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', user.role);
+      return { token, user, role: user.role };
     }
-
-    const { data } = await apiClient.post('/auth/google', { credential });
-    if (data.token) {
-      localStorage.setItem('campusnest_token', data.token);
-      localStorage.setItem('campusnest_user', JSON.stringify(data.user));
-    }
-    return data;
   },
 
   getCurrentUser() {
@@ -107,11 +104,13 @@ export const authService = {
   },
 
   getToken() {
-    return localStorage.getItem('campusnest_token');
+    return localStorage.getItem('campusnest_token') || localStorage.getItem('token');
   },
 
   logout() {
     localStorage.removeItem('campusnest_token');
     localStorage.removeItem('campusnest_user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
   },
 };

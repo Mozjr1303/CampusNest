@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="mzuniGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#065F46" />
+      <stop offset="100%" stop-color="#022c22" />
+    </linearGradient>
+    <linearGradient id="mzuniGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+  </defs>
+  <!-- Circle Crest -->
+  <circle cx="60" cy="60" r="50" fill="url(#mzuniGreen)" stroke="url(#mzuniGold)" stroke-width="3" />
+  <circle cx="60" cy="60" r="44" fill="none" stroke="#FBBF24" stroke-width="1" stroke-dasharray="3,3" opacity="0.6" />
+  <!-- Northern Mountain Silhouette -->
+  <polygon points="36,68 52,48 64,62 76,44 88,68" fill="#047857" opacity="0.8" />
+  <polygon points="46,68 60,50 74,68" fill="url(#mzuniGold)" opacity="0.9" />
+  <!-- Rising Sun behind Mountain -->
+  <circle cx="60" cy="40" r="8" fill="#FDE047" />
+  <path d="M60 26 L60 29 M47 33 L49 35 M73 33 L71 35 M42 42 L45 42 M78 42 L75 42" stroke="#FDE047" stroke-width="2" stroke-linecap="round" />
+  <!-- Open Book at Base -->
+  <path d="M60 66 C52 62 42 63 36 65 L36 76 C42 74 52 74 60 78 C68 74 78 74 84 76 L84 65 C78 63 68 62 60 66 Z" fill="#ffffff" />
+  <!-- Banner -->
+  <rect x="25" y="80" width="70" height="15" rx="4" fill="url(#mzuniGold)" />
+  <text x="60" y="91" font-family="Arial, sans-serif" font-weight="900" font-size="9" fill="#022c22" text-anchor="middle" letter-spacing="1">MZUNI</text>
+</svg>

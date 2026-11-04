@@ -22,16 +22,16 @@ export function Footer() {
           </div>
           <Link
             to="/safety"
-            className="shrink-0 px-3.5 py-2 rounded-lg bg-secondary text-on-secondary text-xs font-heading font-bold active:scale-95 transition-transform"
+            className="w-full sm:w-auto text-center shrink-0 px-3.5 py-2 rounded-lg bg-secondary text-on-secondary text-xs font-heading font-bold active:scale-95 transition-transform"
           >
             Safety Guidelines
           </Link>
         </div>
 
         {/* Links Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           {/* Brand Info */}
-          <div className="col-span-2 md:col-span-1 flex flex-col gap-3">
+          <div className="sm:col-span-2 md:col-span-1 flex flex-col gap-3">
             <div className="flex items-center gap-2.5">
               <img
                 src="/favicon.svg"

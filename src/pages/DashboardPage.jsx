@@ -4,7 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
 import { viewingsService } from '../services/viewings.service';
 import { accommodationsService } from '../services/accommodations.service';
-import { MOCK_NOTIFICATIONS } from '../mocks/mockData';
+import { REAL_NOTIFICATIONS } from '../data/accommodationsData';
+
 import { formatMWK } from '../utils/formatMWK';
 import { ListingCard } from '../components/listings/ListingCard';
 import { Badge } from '../components/ui/Badge';
@@ -17,7 +18,28 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState(REAL_NOTIFICATIONS);
+  const [reviewModal, setReviewModal] = useState({ open: false, accommodationId: null, title: '', rating: 5, comment: '' });
+
+  // Automatic role redirection: Landlords belong on Landlord Portal, Admins on Admin Console
+  React.useEffect(() => {
+    if (user?.role === 'landlord') {
+      navigate('/landlord/dashboard', { replace: true });
+    } else if (user?.role === 'admin') {
+      navigate('/admin', { replace: true });
+    }
+  }, [user, navigate]);
+
+  if (user?.role === 'landlord' || user?.role === 'admin') {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-12 min-h-[50vh]">
+        <div className="w-10 h-10 border-4 border-surface-container border-t-primary rounded-full animate-spin" />
+        <span className="mt-3 font-heading text-xs font-semibold text-primary">
+          Redirecting to {user?.role === 'landlord' ? 'Landlord Portal' : 'Admin Console'}...
+        </span>
+      </div>
+    );
+  }
 
   const switchTab = (tabName) => {
     setSearchParams({ tab: tabName });
@@ -44,6 +66,16 @@ export default function DashboardPage() {
     mutationFn: (id) => viewingsService.cancelViewing(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['viewings'] });
+    },
+  });
+
+  // Review mutation (SRS FR-16)
+  const reviewMutation = useMutation({
+    mutationFn: ({ accommodationId, rating, comment }) =>
+      accommodationsService.submitReview(accommodationId, { rating, comment }),
+    onSuccess: () => {
+      alert('Thank you! Your verified accommodation review was submitted.');
+      setReviewModal({ open: false, accommodationId: null, title: '', rating: 5, comment: '' });
     },
   });
 
@@ -343,6 +375,25 @@ export default function DashboardPage() {
                           </a>
                         )}
 
+                        {isCompleted && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setReviewModal({
+                                open: true,
+                                accommodationId: viewing.accommodationId,
+                                title: viewing.accommodationTitle,
+                                rating: 5,
+                                comment: '',
+                              })
+                            }
+                            className="px-3 py-1.5 rounded-lg text-xs font-heading font-bold bg-primary text-on-primary hover:bg-primary-container shadow-xs active:scale-95 transition-all flex items-center gap-1"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">rate_review</span>
+                            <span>Rate & Review</span>
+                          </button>
+                        )}
+
                         {!isCancelled && !isCompleted && (
                           <button
                             type="button"
@@ -411,41 +462,138 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className="flex flex-col gap-2.5">
-            {notifications.map((notif) => (
-              <div
-                key={notif.id}
-                className={`
-                  p-4 rounded-xl border flex items-start gap-3 transition-colors
-                  ${notif.read ? 'bg-surface-container-low border-outline-variant/30' : 'bg-surface-container-lowest border-primary/30 shadow-sm'}
-                `}
-              >
+          {notifications.length === 0 ? (
+            <EmptyState
+              icon="notifications_off"
+              title="No Notifications"
+              description="You have no new alerts or announcements at this time."
+            />
+          ) : (
+            <div className="flex flex-col gap-2.5">
+              {notifications.map((notif) => (
                 <div
+                  key={notif.id}
                   className={`
-                    w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5
-                    ${notif.type === 'warning' ? 'bg-secondary-fixed text-secondary' : 'bg-primary/10 text-primary'}
+                    p-4 rounded-xl border flex items-start gap-3 transition-colors
+                    ${notif.read ? 'bg-surface-container-low border-outline-variant/30' : 'bg-surface-container-lowest border-primary/30 shadow-sm'}
                   `}
                 >
-                  <span className="material-symbols-outlined text-[18px]">
-                    {notif.type === 'warning' ? 'warning' : 'notifications'}
+                  <div
+                    className={`
+                      w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5
+                      ${notif.type === 'warning' ? 'bg-secondary-fixed text-secondary' : 'bg-primary/10 text-primary'}
+                    `}
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      {notif.type === 'warning' ? 'warning' : 'notifications'}
+                    </span>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="font-heading font-bold text-xs sm:text-sm text-on-surface">
+                        {notif.title}
+                      </h3>
+                      <span className="text-[10px] text-on-surface-variant shrink-0">{notif.timestamp}</span>
+                    </div>
+                    <p className="font-sans text-xs text-on-surface-variant mt-0.5 leading-relaxed">
+                      {notif.message}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+      {/* Review Submission Modal (SRS FR-16) */}
+      {reviewModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-surface w-full max-w-md p-6 rounded-2xl border border-outline-variant/40 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-heading font-bold text-base text-primary">
+                Review Accommodation (FR-16)
+              </h3>
+              <button
+                type="button"
+                onClick={() => setReviewModal({ open: false, accommodationId: null, title: '', rating: 5, comment: '' })}
+                className="text-on-surface-variant hover:text-on-surface"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            <p className="text-xs text-on-surface-variant">
+              Share your verified walkthrough experience for <strong>{reviewModal.title}</strong> to help fellow scholars.
+            </p>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                reviewMutation.mutate({
+                  accommodationId: reviewModal.accommodationId,
+                  rating: reviewModal.rating,
+                  comment: reviewModal.comment,
+                });
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">
+                  Rating (1 to 5 Stars) *
+                </label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewModal({ ...reviewModal, rating: star })}
+                      className="p-1 text-amber-500 hover:scale-110 transition-transform"
+                    >
+                      <span className="material-symbols-outlined text-[28px]">
+                        {star <= reviewModal.rating ? 'star' : 'star_outline'}
+                      </span>
+                    </button>
+                  ))}
+                  <span className="text-xs font-bold text-on-surface ml-2">
+                    {reviewModal.rating} / 5 Stars
                   </span>
                 </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <h3 className="font-heading font-bold text-xs sm:text-sm text-on-surface">
-                      {notif.title}
-                    </h3>
-                    <span className="text-[10px] text-on-surface-variant shrink-0">{notif.timestamp}</span>
-                  </div>
-                  <p className="font-sans text-xs text-on-surface-variant mt-0.5 leading-relaxed">
-                    {notif.message}
-                  </p>
-                </div>
               </div>
-            ))}
+
+              <div>
+                <label className="block text-xs font-semibold text-on-surface mb-1">
+                  Your Feedback *
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={reviewModal.comment}
+                  onChange={(e) => setReviewModal({ ...reviewModal, comment: e.target.value })}
+                  placeholder="How was the water pressure, security, quietness, and distance to campus gate?"
+                  className="w-full text-xs p-2.5 rounded-xl border border-outline-variant bg-surface-container-low text-on-surface focus:outline-hidden focus:ring-2 focus:ring-primary"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setReviewModal({ open: false, accommodationId: null, title: '', rating: 5, comment: '' })}
+                  className="px-3 py-1.5 rounded-lg border border-outline-variant text-xs font-semibold text-on-surface hover:bg-surface-container"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={reviewMutation.isPending}
+                  className="px-4 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-heading font-bold hover:bg-primary-container shadow-xs disabled:opacity-50"
+                >
+                  {reviewMutation.isPending ? 'Submitting...' : 'Submit Review'}
+                </button>
+              </div>
+            </form>
           </div>
-        </section>
+        </div>
       )}
     </div>
   );

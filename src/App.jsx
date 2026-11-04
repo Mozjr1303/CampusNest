@@ -20,6 +20,12 @@ const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const AuthPage = lazy(() => import('./components/auth/AuthPage'));
+const CreateListingForm = lazy(() => import('./components/landlord/CreateListingForm'));
+const EditListingForm = lazy(() => import('./components/landlord/EditListingForm'));
+const LandlordDashboard = lazy(() => import('./components/landlord/LandlordDashboard'));
+const ViewingRequests = lazy(() => import('./components/landlord/ViewingRequests'));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 
 // Configure TanStack Query
 const queryClient = new QueryClient({
@@ -86,6 +92,61 @@ export default function App() {
                   element={
                     <ProtectedRoute>
                       <ReportListingPage />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Auth Route */}
+                <Route path="auth" element={<AuthPage />} />
+
+                {/* Landlord Routes */}
+                <Route
+                  path="landlord/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <LandlordDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="landlord/listings/new"
+                  element={
+                    <ProtectedRoute>
+                      <CreateListingForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="landlord/listings/:id/edit"
+                  element={
+                    <ProtectedRoute>
+                      <EditListingForm />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="landlord/viewings"
+                  element={
+                    <ProtectedRoute>
+                      <ViewingRequests />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Administrator Routes (SRS FR-14, FR-15, FR-19, FR-20, Sec 10.ix) */}
+                <Route
+                  path="admin"
+                  element={
+                    <ProtectedRoute>
+                      <AdminDashboardPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="admin/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <AdminDashboardPage />
                     </ProtectedRoute>
                   }
                 />

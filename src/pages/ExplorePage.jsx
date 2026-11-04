@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { accommodationsService } from '../services/accommodations.service';
-import { UNIVERSITIES } from '../mocks/mockData';
+import { UNIVERSITIES } from '../constants/universities';
 import { ListingCard } from '../components/listings/ListingCard';
 import { ListingCardSkeleton } from '../components/ui/Skeleton';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -179,7 +179,11 @@ export default function ExplorePage() {
                   }
                 `}
               >
-                {u.id === 'all' && <span className="material-symbols-outlined text-[16px]">domain</span>}
+                {u.id === 'all' ? (
+                  <span className="material-symbols-outlined text-[16px]">domain</span>
+                ) : u.logo ? (
+                  <img src={u.logo} alt="" className="w-5 h-5 object-contain rounded-full bg-white p-0.5 border border-outline-variant/30 shrink-0" />
+                ) : null}
                 <span>{u.name}</span>
               </button>
             );
@@ -341,6 +345,20 @@ export default function ExplorePage() {
             >
               Reset Filters
             </Button>
+
+            {/* Mobile Done Button */}
+            {showFiltersMobile && (
+              <Button
+                variant="accent"
+                size="sm"
+                fullWidth
+                className="md:hidden"
+                onClick={() => setShowFiltersMobile(false)}
+                icon="check"
+              >
+                Apply & View Results ({pagination.total})
+              </Button>
+            )}
           </div>
         </aside>
 

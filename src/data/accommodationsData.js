@@ -73,13 +73,13 @@ export const MOCK_ACCOMMODATIONS = [
     universityName: 'UNIMA (University of Malawi)',
     area: 'Chikanda Village, Zomba',
     distanceToGate: '~650m from UNIMA Main Gate (7 min walk)',
-    generalLocationNote: 'General area mapped — exact gate disclosed after booking viewing',
+    generalLocationNote: 'General area mapped ΓÇö exact gate disclosed after booking viewing',
     price: 65000,
     deposit: 65000,
     billingCycle: 'month',
     roomType: 'single',
     roomTypeName: 'Self-Contained Single Room',
-    availabilityStatus: 'Immediate Vacancy • 1 Room Left',
+    availabilityStatus: 'Immediate Vacancy ΓÇó 1 Room Left',
     isAvailable: true,
     electricityType: 'Sub-metered',
     utilitiesIncluded: ['24/7 Borehole Water', 'Solar Backup Lighting', 'Trash Collection'],
@@ -102,7 +102,7 @@ export const MOCK_ACCOMMODATIONS = [
     ],
     description: 'Designed specifically for serious UNIMA students, Sunrise Heights offers a quiet, highly secured living environment located along the upper Chikanda student corridor. The unit is a self-contained private room featuring cross-ventilation windows facing the Zomba Plateau breezes, high ceilings, and tiled flooring.',
     rules: {
-      quietHours: '9 PM – 6 AM',
+      quietHours: '9 PM ΓÇô 6 AM',
       libraryDistance: '8 min walk to UNIMA Library',
       cooking: 'Gas & Electric Cookers Allowed',
       caretaker: '24/7 on compound'
@@ -140,7 +140,7 @@ export const MOCK_ACCOMMODATIONS = [
     },
     landlord: {
       name: 'Mr. B. Phiri',
-      role: 'Host since 2022 • Chikanda',
+      role: 'Host since 2022 ΓÇó Chikanda',
       responseSpeed: 'Replies in ~15 mins',
       phone: '+265991600735',
       whatsapp: '265991600735',
@@ -180,7 +180,7 @@ export const MOCK_ACCOMMODATIONS = [
     universityName: 'UNIMA (University of Malawi)',
     area: 'Chirunga, Zomba',
     distanceToGate: '~450m to UNIMA Gate 2 (5 min walk)',
-    generalLocationNote: 'General area mapped — close to Chirunga primary turn-off',
+    generalLocationNote: 'General area mapped ΓÇö close to Chirunga primary turn-off',
     price: 42000,
     deposit: 42000,
     billingCycle: 'month',
@@ -206,7 +206,7 @@ export const MOCK_ACCOMMODATIONS = [
     ],
     description: 'Affordable, secure double room situated in Chirunga, minutes away from the lecture halls. Features twin beds, sturdy built-in wardrobes, study tables, and a shared modern bathroom facility kept spotless by our daily compound caretaker.',
     rules: {
-      quietHours: '10 PM – 5 AM',
+      quietHours: '10 PM ΓÇô 5 AM',
       libraryDistance: '5 min walk',
       cooking: 'Designated communal kitchen',
       caretaker: 'On-site matron'
@@ -222,7 +222,7 @@ export const MOCK_ACCOMMODATIONS = [
     },
     landlord: {
       name: 'Mrs. M. Banda',
-      role: 'Host since 2021 • Chirunga',
+      role: 'Host since 2021 ΓÇó Chirunga',
       responseSpeed: 'Replies in ~30 mins',
       phone: '+265991600735',
       whatsapp: '265991600735',
@@ -279,7 +279,7 @@ export const MOCK_ACCOMMODATIONS = [
     ],
     description: 'Clean modern block designed specifically for MUST engineering and computer science students. Built in 2023, featuring tiled floors, ceiling fans for Thyolo warmth, and quiet surroundings conducive to intensive study sessions.',
     rules: {
-      quietHours: '10 PM – 6 AM',
+      quietHours: '10 PM ΓÇô 6 AM',
       libraryDistance: '10 min walk to MUST Library',
       cooking: 'Cooking allowed in kitchen alcove',
       caretaker: 'Resident caretaker on premises'
@@ -295,7 +295,7 @@ export const MOCK_ACCOMMODATIONS = [
     },
     landlord: {
       name: 'Mr. K. Gondwe',
-      role: 'Host since 2023 • Goliati',
+      role: 'Host since 2023 ΓÇó Goliati',
       responseSpeed: 'Replies in ~20 mins',
       phone: '+265991600735',
       whatsapp: '265991600735',
@@ -368,7 +368,7 @@ export const MOCK_ACCOMMODATIONS = [
     },
     landlord: {
       name: 'Dr. E. Chirwa',
-      role: 'Host since 2020 • Blantyre',
+      role: 'Host since 2020 ΓÇó Blantyre',
       responseSpeed: 'Replies in ~10 mins',
       phone: '+265991600735',
       whatsapp: '265991600735',
@@ -424,7 +424,7 @@ export const MOCK_ACCOMMODATIONS = [
     ],
     description: 'Economical, clean, and well-managed student residence tailored for agriculture and natural resources scholars at LUANAR Bunda. Large gated yard, reliable borehole with heavy capacity tanks, and friendly communal study spots.',
     rules: {
-      quietHours: '9:30 PM – 5:30 AM',
+      quietHours: '9:30 PM ΓÇô 5:30 AM',
       libraryDistance: '8 min walk to Bunda Library',
       cooking: 'Dedicated outdoor & indoor cooking stations',
       caretaker: 'On-site compound warden'
@@ -440,7 +440,7 @@ export const MOCK_ACCOMMODATIONS = [
     },
     landlord: {
       name: 'Mr. S. Mvula',
-      role: 'Host since 2019 • Bunda',
+      role: 'Host since 2019 ΓÇó Bunda',
       responseSpeed: 'Replies in ~40 mins',
       phone: '+265991600735',
       whatsapp: '265991600735',
@@ -477,7 +477,7 @@ export const MOCK_ACCOMMODATIONS = [
     billingCycle: 'month',
     roomType: 'single',
     roomTypeName: 'Single Private Room',
-    availabilityStatus: 'Immediate Vacancy • 2 Rooms Left',
+    availabilityStatus: 'Immediate Vacancy ΓÇó 2 Rooms Left',
     isAvailable: true,
     electricityType: 'Sub-metered',
     utilitiesIncluded: ['Northern Region Water Board + Tanks', 'Solar Perimeter Lights'],
@@ -496,7 +496,7 @@ export const MOCK_ACCOMMODATIONS = [
     ],
     description: 'Private single rooms in quiet Luwinga, right behind the Mzuzu University campus corridor. High ceilings, tiled floor, secure gate, and peaceful environment with great natural airflow.',
     rules: {
-      quietHours: '10 PM – 6 AM',
+      quietHours: '10 PM ΓÇô 6 AM',
       libraryDistance: '7 min walk to MZUNI Library',
       cooking: 'Cooking allowed',
       caretaker: 'On-site landlord representative'
@@ -512,7 +512,7 @@ export const MOCK_ACCOMMODATIONS = [
     },
     landlord: {
       name: 'Mr. P. Mkandawire',
-      role: 'Host since 2021 • Luwinga',
+      role: 'Host since 2021 ΓÇó Luwinga',
       responseSpeed: 'Replies in ~25 mins',
       phone: '+265991600735',
       whatsapp: '265991600735',
@@ -570,7 +570,7 @@ export const MOCK_ACCOMMODATIONS = [
     ],
     description: 'Purpose-built accommodation for DMI St. John the Baptist University students in Mangochi. Features tiled floors, excellent natural cross-ventilation from Lake Malawi breezes, reliable solar-powered ceiling fans for Mangochi climate, and peaceful study atmosphere.',
     rules: {
-      quietHours: '9:30 PM – 5:30 AM',
+      quietHours: '9:30 PM ΓÇô 5:30 AM',
       libraryDistance: '6 min walk to DMI University Library',
       cooking: 'Cooking allowed with gas or electric hotplates',
       caretaker: 'On-site resident caretaker 24/7'
@@ -588,7 +588,7 @@ export const MOCK_ACCOMMODATIONS = [
     },
     landlord: {
       name: 'Mr. A. Maseko',
-      role: 'Host since 2022 • Mangochi',
+      role: 'Host since 2022 ΓÇó Mangochi',
       responseSpeed: 'Replies in ~20 mins',
       phone: '+265991600735',
       whatsapp: '265991600735',
@@ -625,7 +625,7 @@ export const MOCK_ACCOMMODATIONS = [
     billingCycle: 'month',
     roomType: 'single',
     roomTypeName: 'Executive Engineering Study Room',
-    availabilityStatus: 'Immediate Vacancy • 1 Room Left',
+    availabilityStatus: 'Immediate Vacancy ΓÇó 1 Room Left',
     isAvailable: true,
     electricityType: 'Sub-metered',
     utilitiesIncluded: ['Blantyre Water Board + Tanks', 'High-Speed Wi-Fi', 'Solar Backup Lighting'],
@@ -645,7 +645,7 @@ export const MOCK_ACCOMMODATIONS = [
     ],
     description: 'Modern, high-connectivity single room tailored for MUBAS engineering, computing, and commerce students. Features high ceilings, tiled floors, reliable backup solar lighting, and dedicated fibre broadband.',
     rules: {
-      quietHours: '10 PM – 6 AM',
+      quietHours: '10 PM ΓÇô 6 AM',
       libraryDistance: '6 min walk to MUBAS Library',
       cooking: 'Cooking allowed with gas or electric hotplates',
       caretaker: 'On-site resident caretaker'
@@ -661,7 +661,7 @@ export const MOCK_ACCOMMODATIONS = [
     },
     landlord: {
       name: 'Mr. C. Kalua',
-      role: 'Host since 2021 • Kanjedza',
+      role: 'Host since 2021 ΓÇó Kanjedza',
       responseSpeed: 'Replies in ~15 mins',
       phone: '+265991600735',
       whatsapp: '265991600735',
@@ -781,3 +781,8 @@ export const MOCK_NOTIFICATIONS = [
     read: true
   }
 ];
+
+
+export const REAL_ACCOMMODATIONS = MOCK_ACCOMMODATIONS;
+export const REAL_VIEWINGS = MOCK_VIEWINGS;
+export const REAL_NOTIFICATIONS = MOCK_NOTIFICATIONS;

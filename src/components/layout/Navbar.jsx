@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, isAuthenticated, logout, savedListingIds } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -14,7 +14,7 @@ export function Navbar() {
   };
 
   const navLinkClasses = ({ isActive }) =>
-    `font-heading text-sm font-semibold transition-colors ${
+    `font-heading text-xs lg:text-sm font-semibold whitespace-nowrap shrink-0 transition-colors ${
       isActive
         ? 'text-primary'
         : 'text-on-surface-variant hover:text-on-surface'
@@ -22,9 +22,9 @@ export function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-xl border-b border-outline-variant/30 pt-safe">
-      <div className="max-w-7xl mx-auto h-16 px-4 sm:px-6 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto h-16 px-4 sm:px-6 flex items-center justify-between gap-2 lg:gap-4">
         {/* Left: Hamburger & Brand */}
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             type="button"
             aria-label={mobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
@@ -36,17 +36,17 @@ export function Navbar() {
             </span>
           </button>
 
-          <Link to="/" className="flex items-center gap-2.5 group">
+          <Link to="/" className="flex items-center gap-2.5 group shrink-0">
             <img
               src="/favicon.svg"
               alt="CampusNest Malawi Logo"
               className="w-9 h-9 rounded-lg shadow-sm group-hover:scale-105 transition-transform shrink-0"
             />
-            <div className="flex flex-col">
-              <span className="font-heading font-bold text-lg text-primary tracking-tight leading-none">
+            <div className="flex flex-col shrink-0">
+              <span className="font-heading font-bold text-lg text-primary tracking-tight leading-none whitespace-nowrap">
                 CampusNest
               </span>
-              <span className="text-[10px] font-bold text-secondary uppercase tracking-widest leading-none mt-0.5">
+              <span className="text-[10px] font-bold text-secondary uppercase tracking-widest leading-none mt-0.5 whitespace-nowrap">
                 Malawi
               </span>
             </div>
@@ -54,14 +54,24 @@ export function Navbar() {
         </div>
 
         {/* Center: Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
+        <nav className="hidden md:flex items-center gap-3 lg:gap-5 xl:gap-6 overflow-x-auto no-scrollbar py-1" aria-label="Main navigation">
           <NavLink to="/" className={navLinkClasses} end>
             Home
           </NavLink>
           <NavLink to="/explore" className={navLinkClasses}>
             Explore Rooms
           </NavLink>
-          {isAuthenticated && (
+          {isAuthenticated && user?.role === 'admin' && (
+            <NavLink to="/admin" className={navLinkClasses}>
+              Admin Console
+            </NavLink>
+          )}
+          {isAuthenticated && user?.role === 'landlord' && (
+            <NavLink to="/landlord/dashboard" className={navLinkClasses}>
+              Landlord Portal
+            </NavLink>
+          )}
+          {isAuthenticated && (!user?.role || user?.role === 'student') && (
             <NavLink to="/dashboard" className={navLinkClasses}>
               Dashboard
             </NavLink>
@@ -75,7 +85,7 @@ export function Navbar() {
         </nav>
 
         {/* Right: Quick Actions & Profile */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Search Shortcut */}
           <Link
             to="/explore"
@@ -85,34 +95,20 @@ export function Navbar() {
             <span className="material-symbols-outlined text-[22px]">search</span>
           </Link>
 
-          {/* Saved Listings Bookmark */}
-          <Link
-            to="/dashboard?tab=saved"
-            aria-label={`Saved listings (${savedListingIds.length} saved)`}
-            className="w-10 h-10 relative flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container active:scale-95 transition-all"
-          >
-            <span className="material-symbols-outlined text-[22px]">bookmark</span>
-            {savedListingIds.length > 0 && (
-              <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-secondary-container text-on-secondary text-[10px] font-bold leading-4 flex items-center justify-center">
-                {savedListingIds.length}
-              </span>
-            )}
-          </Link>
-
           {/* Auth State */}
           {isAuthenticated ? (
-            <div className="flex items-center gap-2 pl-1">
+            <div className="flex items-center gap-2 pl-1 shrink-0">
               <Link
                 to="/profile"
-                className="flex items-center gap-2 sm:gap-2.5 py-1 px-1 sm:px-2 rounded-full hover:bg-surface-container/70 active:scale-95 transition-all group"
-                title={`${user?.fullName || 'Chisomo'} — Profile`}
-                aria-label={`Student profile for ${user?.fullName ? user.fullName.trim().split(/\s+/)[0] : 'Chisomo'}`}
+                className="flex items-center gap-2 sm:gap-2.5 py-1 px-1 sm:px-2 rounded-full hover:bg-surface-container/70 active:scale-95 transition-all group shrink-0"
+                title={`${user?.fullName || 'User'} — Profile (${user?.role || 'student'})`}
+                aria-label={`Profile for ${user?.fullName ? user.fullName.trim().split(/\s+/)[0] : 'User'}`}
               >
                 <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#004d40] text-white flex items-center justify-center font-heading font-extrabold text-xs sm:text-[13px] tracking-wide ring-[2.5px] ring-[#80dfc8] shadow-xs shrink-0 overflow-hidden">
                   {user?.avatar ? (
                     <img
                       src={user.avatar}
-                      alt={user.fullName || 'Student'}
+                      alt={user.fullName || 'User'}
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -129,22 +125,29 @@ export function Navbar() {
                     </span>
                   )}
                 </div>
-                <span className="font-heading font-bold text-sm sm:text-[15px] text-on-surface tracking-tight">
-                  {user?.fullName ? user.fullName.trim().split(/\s+/)[0] : 'Chisomo'}
-                </span>
+                <div className="hidden sm:flex flex-col text-left max-w-[120px]">
+                  <span className="font-heading font-bold text-xs sm:text-sm text-on-surface tracking-tight truncate">
+                    {user?.fullName ? user.fullName.trim().split(/\s+/)[0] : 'User'}
+                  </span>
+                  {user?.role === 'admin' && (
+                    <span className="text-[10px] text-primary font-bold uppercase tracking-wider -mt-0.5">
+                      Admin
+                    </span>
+                  )}
+                </div>
               </Link>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <Link
                 to="/login"
-                className="hidden sm:inline-flex text-xs font-semibold px-3 py-2 rounded-lg text-primary hover:bg-surface-container transition-colors"
+                className="hidden sm:inline-flex text-xs font-semibold px-3 py-2 rounded-lg text-primary hover:bg-surface-container transition-colors whitespace-nowrap"
               >
                 Log In
               </Link>
               <Link
                 to="/register"
-                className="inline-flex text-xs font-bold px-3.5 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-colors shadow-sm"
+                className="inline-flex text-xs font-bold px-3.5 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary-container transition-colors shadow-sm whitespace-nowrap"
               >
                 Register
               </Link>
@@ -211,19 +214,47 @@ export function Navbar() {
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="font-heading font-bold text-on-surface text-sm truncate">
-                    {user?.fullName || 'Chisomo Banda'}
+                    {user?.fullName || 'User'}
                   </span>
-                  <span className="text-[11px] text-primary font-medium">View Student Profile & Settings</span>
+                  <span className="text-[11px] text-primary font-medium">
+                    {user?.role === 'admin'
+                      ? 'Administrator Profile & Console'
+                      : user?.role === 'landlord'
+                      ? 'Landlord Profile & Settings'
+                      : 'Student Profile & Settings'}
+                  </span>
                 </div>
               </Link>
-              <Link
-                to="/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="py-2.5 px-3 rounded-lg text-sm font-semibold text-on-surface hover:bg-surface-container flex items-center gap-2.5"
-              >
-                <span className="material-symbols-outlined text-primary text-[20px]">dashboard</span>
-                <span>Student Dashboard & Bookings</span>
-              </Link>
+              {user?.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-2.5 px-3 rounded-lg text-sm font-semibold text-primary hover:bg-surface-container flex items-center gap-2.5"
+                >
+                  <span className="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+                  <span>Admin Console & Approvals</span>
+                </Link>
+              )}
+              {user?.role === 'landlord' && (
+                <Link
+                  to="/landlord/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-2.5 px-3 rounded-lg text-sm font-semibold text-primary hover:bg-surface-container flex items-center gap-2.5"
+                >
+                  <span className="material-symbols-outlined text-[20px]">real_estate_agent</span>
+                  <span>Landlord Portal & Properties</span>
+                </Link>
+              )}
+              {(!user?.role || user?.role === 'student') && (
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-2.5 px-3 rounded-lg text-sm font-semibold text-on-surface hover:bg-surface-container flex items-center gap-2.5"
+                >
+                  <span className="material-symbols-outlined text-primary text-[20px]">dashboard</span>
+                  <span>Student Dashboard & Bookings</span>
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={handleLogout}

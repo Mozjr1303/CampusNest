@@ -2,11 +2,89 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { accommodationsService } from '../services/accommodations.service';
-import { UNIVERSITIES } from '../mocks/mockData';
+import { UNIVERSITIES } from '../constants/universities';
 import { ListingCard } from '../components/listings/ListingCard';
 import { ListingCardSkeleton } from '../components/ui/Skeleton';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { Button } from '../components/ui/Button';
+
+function CampusCard({ uni, isSelected, onClick }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const showPhoto = Boolean(uni.image) && !imgFailed;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`
+        group relative rounded-xl overflow-hidden aspect-[4/3] text-left transition-all duration-200 border flex flex-col justify-between
+        ${
+          isSelected
+            ? 'ring-2 ring-primary ring-offset-2 border-primary shadow-md scale-[1.02]'
+            : 'border-outline-variant/30 hover:shadow-md hover:border-primary/50 hover:scale-[1.01]'
+        }
+        ${!showPhoto ? `bg-gradient-to-br ${uni.bgColor || 'from-[#002244] to-[#001122]'}` : 'bg-surface-container'}
+      `}
+    >
+      {showPhoto ? (
+        <>
+          <img
+            src={uni.image}
+            alt={`${uni.short} Campus in ${uni.city}`}
+            loading="lazy"
+            onError={() => setImgFailed(true)}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
+        </>
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center p-3 pb-8">
+          {uni.logo ? (
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl shadow-lg border border-white/20 p-2 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <img
+                src={uni.logo}
+                alt={`${uni.short} Logo`}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          ) : (
+            <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-white font-heading font-extrabold text-base">
+              {uni.short}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Top logo watermark if photo exists */}
+      {showPhoto && uni.logo && (
+        <div className="relative z-10 p-2">
+          <div className="w-7 h-7 rounded-full bg-white/95 shadow-xs p-0.5 flex items-center justify-center">
+            <img
+              src={uni.logo}
+              alt=""
+              className="w-full h-full object-contain rounded-full"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Bottom Text & Location */}
+      <div className="relative z-10 mt-auto p-2.5 flex flex-col justify-end bg-gradient-to-t from-black/85 via-black/45 to-transparent w-full">
+        <span className="font-heading font-bold text-xs sm:text-sm text-white leading-tight drop-shadow-sm truncate">
+          {uni.short}
+        </span>
+        <span className="text-[10px] text-white/80 font-medium truncate">
+          {uni.city}
+        </span>
+        {isSelected && (
+          <span className="mt-1 w-fit text-[9px] font-bold bg-primary px-1.5 py-0.5 rounded text-on-primary shadow-xs">
+            Selected
+          </span>
+        )}
+      </div>
+    </button>
+  );
+}
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -208,9 +286,9 @@ export default function HomePage() {
 
       {/* Popular Campuses Horizontal Selector */}
       <section id="campuses-section" className="py-8 max-w-7xl mx-auto px-4 sm:px-6 w-full scroll-mt-20">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-[22px]">account_balance</span>
+            <span className="material-symbols-outlined text-primary text-[22px] shrink-0">account_balance</span>
             <div>
               <h2 className="font-heading font-bold text-base sm:text-lg text-on-surface">
                 Explore by University Campus
@@ -222,7 +300,7 @@ export default function HomePage() {
           </div>
           <Link
             to="/explore"
-            className="text-xs font-bold text-primary hover:underline flex items-center gap-0.5"
+            className="self-end sm:self-auto text-xs font-bold text-primary hover:underline flex items-center gap-0.5"
           >
             <span>All Hostels</span>
             <span className="material-symbols-outlined text-[16px]">chevron_right</span>
@@ -230,43 +308,16 @@ export default function HomePage() {
         </div>
 
         {/* Visual Campus Cards Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5 sm:gap-3 mb-4">
           {UNIVERSITIES.filter((uni) => uni.id !== 'all').map((uni) => {
             const isSelected = selectedCampus === uni.id;
             return (
-              <button
+              <CampusCard
                 key={uni.id}
-                type="button"
+                uni={uni}
+                isSelected={isSelected}
                 onClick={() => handleCampusPillClick(uni.id)}
-                className={`
-                  group relative rounded-xl overflow-hidden aspect-[4/3] text-left transition-all duration-200 border
-                  ${
-                    isSelected
-                      ? 'ring-2 ring-primary ring-offset-2 border-primary shadow-md scale-[1.02]'
-                      : 'border-outline-variant/30 hover:shadow-md hover:border-primary/50 hover:scale-[1.01]'
-                  }
-                `}
-              >
-                <img
-                  src={uni.image}
-                  alt={`${uni.short} Campus in ${uni.city}`}
-                  loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent flex flex-col justify-end p-2.5">
-                  <span className="font-heading font-bold text-xs sm:text-sm text-white leading-tight drop-shadow-sm">
-                    {uni.short}
-                  </span>
-                  <span className="text-[10px] text-white/80 font-medium truncate">
-                    {uni.city}
-                  </span>
-                  {isSelected && (
-                    <span className="mt-1 w-fit text-[9px] font-bold bg-primary px-1.5 py-0.5 rounded text-on-primary">
-                      Selected
-                    </span>
-                  )}
-                </div>
-              </button>
+              />
             );
           })}
         </div>
@@ -295,9 +346,11 @@ export default function HomePage() {
                   }
                 `}
               >
-                {uni.id === 'all' && (
+                {uni.id === 'all' ? (
                   <span className="material-symbols-outlined text-[16px]">domain</span>
-                )}
+                ) : uni.logo ? (
+                  <img src={uni.logo} alt="" className="w-4 h-4 object-contain rounded-full" />
+                ) : null}
                 <span>{uni.short}</span>
                 {uni.city && uni.id !== 'all' && (
                   <span className="opacity-75 text-[11px]">({uni.city})</span>

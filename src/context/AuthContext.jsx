@@ -13,9 +13,9 @@ export function AuthProvider({ children }) {
   const [savedListingIds, setSavedListingIds] = useState(() => {
     try {
       const stored = localStorage.getItem('campusnest_saved_listings');
-      return stored ? JSON.parse(stored) : ['sh-001', 'ch-002'];
+      return stored ? JSON.parse(stored) : [];
     } catch {
-      return ['sh-001', 'ch-002'];
+      return [];
     }
   });
 

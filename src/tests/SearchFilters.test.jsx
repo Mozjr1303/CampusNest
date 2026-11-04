@@ -2,11 +2,12 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import ExplorePage from '../pages/ExplorePage';
 import App from '../App';
 import { AuthProvider } from '../context/AuthContext';
 import { accommodationsService } from '../services/accommodations.service';
+import apiClient from '../services/apiClient';
 
 function renderExplorePage() {
   const queryClient = new QueryClient({
@@ -53,23 +54,20 @@ describe('Search Filters and Exploration Component', () => {
     expect(screen.getByText(/DMI \(DMI St. John the Baptist University\)/i)).toBeInTheDocument();
   });
 
-  it('filters accommodations service correctly by university and budget in mock mode', async () => {
-    // Direct service unit test for filter logic
-    const allResults = await accommodationsService.getAccommodations();
-    expect(allResults.data.length).toBeGreaterThan(0);
+  it('calls accommodations service API with requested query parameters', async () => {
+    const getSpy = vi.spyOn(apiClient, 'get').mockResolvedValue({
+      data: {
+        data: [{ id: '1', universityId: 'unima', price: 45000, roomType: 'single' }],
+        pagination: { total: 1, page: 1, limit: 6, totalPages: 1 },
+      },
+    });
 
-    const unimaResults = await accommodationsService.getAccommodations({ university: 'unima' });
-    expect(unimaResults.data.every((item) => item.universityId === 'unima')).toBe(true);
-
-    const dmiResults = await accommodationsService.getAccommodations({ university: 'dmi' });
-    expect(dmiResults.data.length).toBeGreaterThan(0);
-    expect(dmiResults.data.every((item) => item.universityId === 'dmi')).toBe(true);
-
-    const budgetResults = await accommodationsService.getAccommodations({ maxPrice: '50000' });
-    expect(budgetResults.data.every((item) => item.price <= 50000)).toBe(true);
-
-    const singleRoomResults = await accommodationsService.getAccommodations({ type: 'single' });
-    expect(singleRoomResults.data.every((item) => item.roomType === 'single')).toBe(true);
+    const results = await accommodationsService.getAccommodations({ university: 'unima', maxPrice: '50000' });
+    expect(getSpy).toHaveBeenCalledWith('/accommodations', {
+      params: { university: 'unima', maxPrice: '50000' },
+    });
+    expect(results.data.length).toBe(1);
+    getSpy.mockRestore();
   });
 
   it('clears all filters when clicking Reset Filters', async () => {

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="dmiBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="dmiGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FACC15" />
+      <stop offset="100%" stop-color="#CA8A04" />
+    </linearGradient>
+  </defs>
+  <!-- Shield Background -->
+  <path d="M60 12 L100 24 C100 68 84 96 60 108 C36 96 20 68 20 24 Z" fill="url(#dmiBlue)" stroke="url(#dmiGold)" stroke-width="3" />
+  <!-- St. John the Baptist Cross Motif -->
+  <rect x="56" y="28" width="8" height="42" rx="1.5" fill="url(#dmiGold)" />
+  <rect x="44" y="38" width="32" height="8" rx="1.5" fill="url(#dmiGold)" />
+  <!-- Dove of Peace / Lake Wave Motif -->
+  <path d="M38 72 Q60 62 82 72 Q60 78 38 72 Z" fill="#60A5FA" opacity="0.8" />
+  <circle cx="60" cy="54" r="4" fill="#ffffff" />
+  <!-- Banner -->
+  <rect x="25" y="82" width="70" height="15" rx="4" fill="url(#dmiGold)" />
+  <text x="60" y="93" font-family="Arial, sans-serif" font-weight="900" font-size="9" fill="#0f172a" text-anchor="middle" letter-spacing="1">DMI</text>
+</svg>

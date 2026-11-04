@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 export default function AuthPage() {
@@ -55,30 +55,30 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-md border border-gray-200">
+    <div className="flex-1 flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 w-full">
+      <div className="max-w-md w-full space-y-6 bg-surface-container-lowest p-5 sm:p-8 rounded-2xl shadow-xs border border-outline-variant/30">
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+          <div className="mx-auto h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
             <span className="material-symbols-outlined text-2xl">lock</span>
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-4 text-2xl sm:text-3xl font-heading font-extrabold text-on-surface tracking-tight">
             {isLogin ? 'Sign in to your account' : 'Create your account'}
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-1.5 text-xs sm:text-sm text-on-surface-variant">
             {isLogin
               ? 'Access your listings, bookings, and account settings.'
               : 'Join and manage your accommodation or property listings.'}
           </p>
         </div>
 
-        <div className="flex rounded-lg bg-gray-100 p-1">
+        <div className="flex rounded-xl bg-surface-container p-1">
           <button
             type="button"
             onClick={() => setIsLogin(true)}
-            className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
+            className={`flex-1 rounded-lg py-2 text-xs sm:text-sm font-heading font-bold transition-all ${
               isLogin
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-surface-container-lowest text-primary shadow-xs'
+                : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
             Login
@@ -86,10 +86,10 @@ export default function AuthPage() {
           <button
             type="button"
             onClick={() => setIsLogin(false)}
-            className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
+            className={`flex-1 rounded-lg py-2 text-xs sm:text-sm font-heading font-bold transition-all ${
               !isLogin
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-surface-container-lowest text-primary shadow-xs'
+                : 'text-on-surface-variant hover:text-on-surface'
             }`}
           >
             Register
@@ -97,15 +97,15 @@ export default function AuthPage() {
         </div>
 
         {error && (
-          <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700" role="alert">
+          <div className="rounded-xl bg-error-container p-3.5 text-xs sm:text-sm text-on-error-container" role="alert">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
             <div>
-              <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="phone_number" className="block text-xs sm:text-sm font-heading font-bold text-on-surface mb-1">
                 Phone Number
               </label>
               <input
@@ -115,13 +115,13 @@ export default function AuthPage() {
                 value={formData.phone_number}
                 onChange={handleChange}
                 placeholder="+265 99 123 4567"
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full h-11 px-3.5 border border-outline-variant/40 rounded-xl bg-surface-container-low text-on-surface font-sans text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-xs sm:text-sm font-heading font-bold text-on-surface mb-1">
               Email Address
             </label>
             <input
@@ -132,31 +132,46 @@ export default function AuthPage() {
               onChange={handleChange}
               placeholder="you@example.com"
               required
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full h-11 px-3.5 border border-outline-variant/40 rounded-xl bg-surface-container-low text-on-surface font-sans text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
           {!isLogin && (
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
-                Role
+              <label className="block text-xs sm:text-sm font-heading font-bold text-on-surface mb-1.5">
+                Register As
               </label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="student">Student</option>
-                <option value="landlord">Landlord</option>
-                <option value="admin">Admin</option>
-              </select>
+              <div className="grid grid-cols-2 p-1 bg-surface-container rounded-xl border border-outline-variant/30 gap-1">
+                <button
+                  type="button"
+                  onClick={() => setFormData((prev) => ({ ...prev, role: 'student' }))}
+                  className={`py-2.5 px-3 rounded-lg text-xs font-heading font-bold flex items-center justify-center gap-1.5 transition-all ${
+                    formData.role === 'student'
+                      ? 'bg-surface-container-lowest text-primary shadow-xs ring-1 ring-primary/20'
+                      : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">school</span>
+                  <span>Student</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData((prev) => ({ ...prev, role: 'landlord' }))}
+                  className={`py-2.5 px-3 rounded-lg text-xs font-heading font-bold flex items-center justify-center gap-1.5 transition-all ${
+                    formData.role === 'landlord'
+                      ? 'bg-surface-container-lowest text-secondary shadow-xs ring-1 ring-secondary/20'
+                      : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">real_estate_agent</span>
+                  <span>Landlord / Host</span>
+                </button>
+              </div>
             </div>
           )}
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-xs sm:text-sm font-heading font-bold text-on-surface mb-1">
               Password
             </label>
             <input
@@ -167,26 +182,26 @@ export default function AuthPage() {
               onChange={handleChange}
               placeholder="••••••••"
               required
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full h-11 px-3.5 border border-outline-variant/40 rounded-xl bg-surface-container-low text-on-surface font-sans text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
           {isLogin && (
-            <div className="flex items-center justify-between text-sm">
-              <label className="inline-flex items-center gap-2 text-gray-600">
-                <input type="checkbox" className="h-4 w-4 text-indigo-600 rounded border-gray-300" />
-                Remember me
+            <div className="flex items-center justify-between text-xs sm:text-sm">
+              <label className="inline-flex items-center gap-2 text-on-surface-variant cursor-pointer">
+                <input type="checkbox" className="h-4 w-4 rounded text-primary focus:ring-primary" />
+                <span>Remember me</span>
               </label>
-              <a href="/forgot-password" className="text-indigo-600 hover:text-indigo-500 font-medium">
-                Forgot password?
-              </a>
+              <Link to="/faq" className="text-primary hover:underline font-semibold">
+                Need help?
+              </Link>
             </div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full h-12 flex justify-center items-center px-4 rounded-xl shadow-xs text-sm font-heading font-bold text-on-primary bg-primary hover:bg-primary-container focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60 disabled:cursor-not-allowed active:scale-98 transition-all"
           >
             {loading ? (isLogin ? 'Signing in...' : 'Creating account...') : isLogin ? 'Sign in' : 'Create account'}
           </button>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="mustNavy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#001F3F" />
+      <stop offset="100%" stop-color="#000d1a" />
+    </linearGradient>
+    <linearGradient id="mustOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF851B" />
+      <stop offset="100%" stop-color="#FF4136" />
+    </linearGradient>
+  </defs>
+  <!-- Circle Crest -->
+  <circle cx="60" cy="60" r="50" fill="url(#mustNavy)" stroke="url(#mustOrange)" stroke-width="3" />
+  <circle cx="60" cy="60" r="44" fill="none" stroke="#FF851B" stroke-width="1" stroke-dasharray="3,3" opacity="0.6" />
+  <!-- Atom / Science Orbit Ring 1 -->
+  <ellipse cx="60" cy="50" rx="26" ry="10" fill="none" stroke="#39CCCC" stroke-width="2" transform="rotate(-30 60 50)" />
+  <!-- Atom / Science Orbit Ring 2 -->
+  <ellipse cx="60" cy="50" rx="26" ry="10" fill="none" stroke="url(#mustOrange)" stroke-width="2" transform="rotate(30 60 50)" />
+  <!-- Flame / Core Atom in Center -->
+  <circle cx="60" cy="50" r="5" fill="#FFDC00" />
+  <!-- Gear Teeth Cogwheel base -->
+  <path d="M52 68 L68 68 L65 77 L55 77 Z" fill="#ffffff" opacity="0.9" />
+  <!-- Banner -->
+  <rect x="25" y="80" width="70" height="15" rx="4" fill="url(#mustOrange)" />
+  <text x="60" y="91" font-family="Arial, sans-serif" font-weight="900" font-size="9" fill="#001F3F" text-anchor="middle" letter-spacing="1">MUST</text>
+</svg>

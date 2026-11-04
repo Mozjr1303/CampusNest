@@ -272,7 +272,7 @@ export default function ListingDetailPage() {
             <p>{listing.description}</p>
 
             {listing.rules && (
-              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-outline-variant/30 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-outline-variant/30 text-xs">
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-[18px] text-primary">menu_book</span>
                   <span><strong>Quiet Hours:</strong> {listing.rules.quietHours}</span>
