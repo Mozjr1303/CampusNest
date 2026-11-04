@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
@@ -17,8 +17,9 @@ RUN npm run build
 # Default environment
 ENV NODE_ENV=production
 ENV PORT=5000
+ENV NODE_OPTIONS="--experimental-sqlite"
 
 EXPOSE 5000
 
 # Start unified server
-CMD ["node", "backend/server.js"]
+CMD ["node", "--experimental-sqlite", "backend/server.js"]

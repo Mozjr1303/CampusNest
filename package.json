@@ -10,8 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "start": "node backend/server.js",
-    "seed": "node backend/scripts/seed.js"
+    "start": "node --experimental-sqlite backend/server.js",
+    "seed": "node --experimental-sqlite backend/scripts/seed.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
