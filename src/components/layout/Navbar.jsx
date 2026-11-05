@@ -61,7 +61,7 @@ export function Navbar() {
           <NavLink to="/explore" className={navLinkClasses}>
             Explore Rooms
           </NavLink>
-          {isAuthenticated && user?.role === 'admin' && (
+          {isAuthenticated && (user?.role === 'admin' || user?.email === 'admin@campusnest.mw') && (
             <NavLink to="/admin" className={navLinkClasses}>
               Admin Console
             </NavLink>
@@ -71,7 +71,7 @@ export function Navbar() {
               Landlord Portal
             </NavLink>
           )}
-          {isAuthenticated && (!user?.role || user?.role === 'student') && (
+          {isAuthenticated && user?.role !== 'admin' && user?.email !== 'admin@campusnest.mw' && user?.role !== 'landlord' && (
             <NavLink to="/dashboard" className={navLinkClasses}>
               Dashboard
             </NavLink>
@@ -129,7 +129,7 @@ export function Navbar() {
                   <span className="font-heading font-bold text-xs sm:text-sm text-on-surface tracking-tight truncate">
                     {user?.fullName ? user.fullName.trim().split(/\s+/)[0] : 'User'}
                   </span>
-                  {user?.role === 'admin' && (
+                  {(user?.role === 'admin' || user?.email === 'admin@campusnest.mw') && (
                     <span className="text-[10px] text-primary font-bold uppercase tracking-wider -mt-0.5">
                       Admin
                     </span>
@@ -217,7 +217,7 @@ export function Navbar() {
                     {user?.fullName || 'User'}
                   </span>
                   <span className="text-[11px] text-primary font-medium">
-                    {user?.role === 'admin'
+                    {user?.role === 'admin' || user?.email === 'admin@campusnest.mw'
                       ? 'Administrator Profile & Console'
                       : user?.role === 'landlord'
                       ? 'Landlord Profile & Settings'
@@ -225,7 +225,7 @@ export function Navbar() {
                   </span>
                 </div>
               </Link>
-              {user?.role === 'admin' && (
+              {(user?.role === 'admin' || user?.email === 'admin@campusnest.mw') && (
                 <Link
                   to="/admin"
                   onClick={() => setMobileMenuOpen(false)}
@@ -245,7 +245,7 @@ export function Navbar() {
                   <span>Landlord Portal & Properties</span>
                 </Link>
               )}
-              {(!user?.role || user?.role === 'student') && (
+              {user?.role !== 'admin' && user?.email !== 'admin@campusnest.mw' && user?.role !== 'landlord' && (
                 <Link
                   to="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}

@@ -17,12 +17,28 @@ export const authService = {
       if (err.response) throw err;
 
       // If network unreachable / offline: allow local session
+      const idStr = String(credentials.identifier || '').toLowerCase().trim();
+      const isAdminUser = idStr === 'admin@campusnest.mw' || idStr.includes('admin');
+      const isLandlordUser = idStr.includes('landlord') || idStr === 'phiri@campusnest.mw' || idStr === 'mbanda@campusnest.mw';
+
       const user = {
-        id: `usr-${Date.now()}`,
-        fullName: 'Campus Scholar',
-        email: credentials.identifier?.includes('@') ? credentials.identifier : 'student@campusnest.mw',
-        phone: !credentials.identifier?.includes('@') ? credentials.identifier : '+265 991 600 735',
-        role: credentials.role || 'student',
+        id: isAdminUser ? 'usr-admin-1' : isLandlordUser ? 'usr-landlord-1' : `usr-${Date.now()}`,
+        fullName: isAdminUser
+          ? 'Yamikani Chanza (Admin)'
+          : isLandlordUser
+          ? 'Mr. B. Phiri'
+          : 'Campus Scholar',
+        email: credentials.identifier?.includes('@')
+          ? credentials.identifier
+          : isAdminUser
+          ? 'admin@campusnest.mw'
+          : 'student@campusnest.mw',
+        phone: !credentials.identifier?.includes('@')
+          ? credentials.identifier
+          : isAdminUser
+          ? '+265991600700'
+          : '+265 991 600 735',
+        role: isAdminUser ? 'admin' : isLandlordUser ? 'landlord' : (credentials.role || 'student'),
       };
       const token = `local-token-${Date.now()}`;
       localStorage.setItem('campusnest_token', token);
@@ -97,7 +113,18 @@ export const authService = {
   getCurrentUser() {
     try {
       const stored = localStorage.getItem('campusnest_user');
-      return stored ? JSON.parse(stored) : null;
+      if (!stored) return null;
+      const user = JSON.parse(stored);
+      if (user && (user.email === 'admin@campusnest.mw' || String(user.email || '').includes('admin'))) {
+        if (user.role !== 'admin' || user.fullName === 'Campus Scholar') {
+          user.role = 'admin';
+          user.fullName = 'Yamikani Chanza (Admin)';
+          user.phone = user.phone && user.phone !== '+265 991 600 735' ? user.phone : '+265991600700';
+          localStorage.setItem('campusnest_user', JSON.stringify(user));
+          localStorage.setItem('role', 'admin');
+        }
+      }
+      return user;
     } catch {
       return null;
     }

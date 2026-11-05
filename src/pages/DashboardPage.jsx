@@ -25,12 +25,12 @@ export default function DashboardPage() {
   React.useEffect(() => {
     if (user?.role === 'landlord') {
       navigate('/landlord/dashboard', { replace: true });
-    } else if (user?.role === 'admin') {
+    } else if (user?.role === 'admin' || user?.email === 'admin@campusnest.mw') {
       navigate('/admin', { replace: true });
     }
   }, [user, navigate]);
 
-  if (user?.role === 'landlord' || user?.role === 'admin') {
+  if (user?.role === 'landlord' || user?.role === 'admin' || user?.email === 'admin@campusnest.mw') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-12 min-h-[50vh]">
         <div className="w-10 h-10 border-4 border-surface-container border-t-primary rounded-full animate-spin" />

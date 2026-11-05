@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../context/AuthContext';
 import { adminService } from '../services/admin.service';
 import { accommodationsService } from '../services/accommodations.service';
 import { Button } from '../components/ui/Button';
@@ -8,6 +9,7 @@ import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { formatMWK } from '../utils/formatMWK';
 
 export default function AdminDashboardPage() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') || 'overview';
@@ -261,6 +263,72 @@ export default function AdminDashboardPage() {
               )}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Administrator Details Profile Card */}
+      <div className="my-6 bg-surface-container-lowest p-5 sm:p-6 rounded-2xl border border-outline-variant/30 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#004d40] text-white flex items-center justify-center font-heading font-extrabold text-xl sm:text-2xl shadow-sm ring-4 ring-[#80dfc8]/30 shrink-0">
+            {user?.fullName
+              ? user.fullName
+                  .trim()
+                  .split(/\s+/)
+                  .map((n) => n[0])
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase()
+              : 'YC'}
+          </div>
+
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="font-heading font-bold text-lg sm:text-xl text-on-surface truncate">
+                {user?.fullName || 'Yamikani Chanza (Admin)'}
+              </h2>
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#004d40] text-white">
+                <span className="material-symbols-outlined text-[14px]">admin_panel_settings</span>
+                <span>Platform Administrator</span>
+              </span>
+            </div>
+
+            <p className="font-heading font-semibold text-xs text-primary mt-1">
+              CampusNest Safety & Moderation Authority • National Portal Moderator
+            </p>
+
+            <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-on-surface-variant font-sans">
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[15px] text-primary">mail</span>
+                <span>{user?.email || 'admin@campusnest.mw'}</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[15px] text-primary">call</span>
+                <span>{user?.phone || '+265991600700'}</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[15px] text-[#059669]">verified_user</span>
+                <span className="text-[#059669] font-medium">Security Clearance: Tier 1 Super Admin</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5 self-start md:self-center shrink-0">
+          <Link
+            to="/profile"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-heading font-bold bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/30 active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-[16px]">manage_accounts</span>
+            <span>Admin Settings</span>
+          </Link>
+          <button
+            type="button"
+            onClick={() => handleTabChange('hostels')}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-heading font-bold bg-primary text-on-primary hover:bg-primary-container shadow-xs active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-[16px]">domain_verification</span>
+            <span>Review Hostels ({pendingHostelsCount})</span>
+          </button>
         </div>
       </div>
 
