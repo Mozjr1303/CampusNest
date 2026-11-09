@@ -2,11 +2,39 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
+import { useAuth } from '../../context/AuthContext';
 
 export default function LandlordDashboard() {
+  const { user } = useAuth();
   const [listings, setListings] = useState([]);
   const [stats, setStats] = useState({ active: 0, pendingViewings: 0, archived: 0 });
   const [loading, setLoading] = useState(true);
+
+  const currentUserId = user?.id || user?.user_id || JSON.parse(localStorage.getItem('campusnest_user') || '{}')?.id;
+
+  const isOwnListing = (item) => {
+    if (!currentUserId || !item) return false;
+    const ownerId = item.landlord_id || item.landlordId || item.landlord?.id;
+    return Boolean(ownerId && String(ownerId) === String(currentUserId));
+  };
+
+  const renderOwnershipBadge = (item) => {
+    const isOwn = isOwnListing(item);
+    if (isOwn) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20">
+          <span className="material-symbols-outlined text-[13px]">person</span>
+          <span>My Property</span>
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-surface-container-high text-on-surface-variant border border-outline-variant/40">
+        <span className="material-symbols-outlined text-[13px]">group</span>
+        <span>Other Landlords' Properties</span>
+      </span>
+    );
+  };
 
   useEffect(() => {
     fetchLandlordData();
@@ -17,26 +45,27 @@ export default function LandlordDashboard() {
       const response = await apiClient.get('/landlord/accommodations');
       const landlordListings = response.data?.listings || [];
       const landlordStats = response.data?.stats || {
-        active: landlordListings.filter((l) => l.availabilityStatus === 'available').length,
+        active: landlordListings.filter((l) => isOwnListing(l) && l.availabilityStatus === 'available').length,
         pendingViewings: 0,
-        archived: landlordListings.filter((l) => l.availabilityStatus === 'archived' || l.availabilityStatus === 'unavailable').length,
+        archived: landlordListings.filter((l) => isOwnListing(l) && (l.availabilityStatus === 'archived' || l.availabilityStatus === 'unavailable')).length,
       };
 
       setListings(landlordListings);
       setStats(landlordStats);
     } catch (error) {
       console.error('Error fetching landlord dashboard data:', error);
-      // Offline fallback: strictly match the logged-in user's ID
-      const user = JSON.parse(localStorage.getItem('campusnest_user') || '{}');
+      // Offline fallback: match authenticated user and accommodations store
+      const storedUser = JSON.parse(localStorage.getItem('campusnest_user') || '{}');
       const allRaw = localStorage.getItem('campusnest_accommodations');
       const all = allRaw ? JSON.parse(allRaw) : [];
-      const userListings = all.filter((item) => user.id && (item.landlordId === user.id || item.landlord?.id === user.id));
+      const currentId = currentUserId || storedUser.id;
+      const ownListings = all.filter((item) => currentId && (item.landlordId === currentId || item.landlord_id === currentId || item.landlord?.id === currentId));
 
-      setListings(userListings);
+      setListings(all.length > 0 ? all : ownListings);
       setStats({
-        active: userListings.filter((l) => l.availabilityStatus === 'available').length,
+        active: ownListings.filter((l) => (l.availabilityStatus || l.availability_status) === 'available').length,
         pendingViewings: 0,
-        archived: userListings.filter((l) => l.availabilityStatus === 'archived' || l.availabilityStatus === 'unavailable').length,
+        archived: ownListings.filter((l) => (l.availabilityStatus || l.availability_status) === 'archived' || (l.availabilityStatus || l.availability_status) === 'unavailable').length,
       });
     } finally {
       setLoading(false);
@@ -109,8 +138,9 @@ export default function LandlordDashboard() {
 
   const pendingApprovalCount = listings.filter(
     (l) =>
-      (l.availability_status || l.availabilityStatus || l.status) === 'pending' ||
-      (l.verification_status || l.verificationStatus) === 'unverified'
+      isOwnListing(l) &&
+      ((l.availability_status || l.availabilityStatus || l.status) === 'pending' ||
+        (l.verification_status || l.verificationStatus) === 'unverified')
   ).length;
 
   if (loading) {
@@ -200,7 +230,7 @@ export default function LandlordDashboard() {
       <div className="bg-surface-container-lowest rounded-2xl shadow-xs border border-outline-variant/30 overflow-hidden">
         <div className="px-5 py-4 border-b border-outline-variant/20 flex items-center justify-between">
           <h2 className="text-base sm:text-lg font-heading font-bold text-on-surface">
-            My Properties ({listings.length})
+            Properties ({listings.length})
           </h2>
           <Link to="/landlord/viewings" className="text-xs font-heading font-semibold text-primary hover:underline flex items-center gap-1">
             <span>View all viewing requests</span>
@@ -224,6 +254,7 @@ export default function LandlordDashboard() {
                 <thead>
                   <tr className="bg-surface-container-low text-on-surface-variant text-xs font-heading font-semibold border-b border-outline-variant/20">
                     <th className="py-3 px-6">Title</th>
+                    <th className="py-3 px-6">Ownership</th>
                     <th className="py-3 px-6">Area / Location</th>
                     <th className="py-3 px-6">Rent (MWK)</th>
                     <th className="py-3 px-6">Status</th>
@@ -231,108 +262,145 @@ export default function LandlordDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant/20 text-xs sm:text-sm text-on-surface">
-                  {listings.map((item) => (
-                    <tr key={item.accommodation_id || item.id} className="hover:bg-surface-container-low/50 transition-colors">
-                      <td className="py-4 px-6 font-heading font-bold text-on-surface">
-                        {item.title}
-                      </td>
-                      <td className="py-4 px-6 text-on-surface-variant">{item.area}</td>
-                      <td className="py-4 px-6 font-semibold tnum text-primary">
-                        MK {Number(item.rent_mwk || item.price || 0).toLocaleString()}
-                      </td>
-                      <td className="py-4 px-6">
-                        {renderStatusBadge(item)}
-                      </td>
-                      <td className="py-4 px-6 text-right space-x-2">
-                        <Link 
-                          to={`/landlord/listings/${item.accommodation_id || item.id}/edit`} 
-                          className="text-xs font-heading font-bold text-primary hover:underline px-2 py-1 rounded hover:bg-primary/5 transition-colors"
-                        >
-                          Edit
-                        </Link>
-                        <button 
-                          type="button"
-                          onClick={() => handleStatusToggle(item.accommodation_id || item.id, item.availability_status || item.status)}
-                          className="text-xs font-heading font-semibold text-on-surface-variant hover:text-on-surface px-2 py-1 rounded hover:bg-surface-container transition-colors"
-                        >
-                          Toggle Status
-                        </button>
-                        <Link 
-                          to={`/landlord/viewings?property=${item.accommodation_id || item.id}`} 
-                          className="text-xs font-heading font-bold text-secondary hover:underline px-2 py-1 rounded hover:bg-secondary/5 transition-colors"
-                        >
-                          Viewings
-                        </Link>
-                        <button 
-                          type="button"
-                          onClick={() => handleDeleteListing(item.accommodation_id || item.id, item.title)}
-                          className="text-xs font-heading font-bold text-error hover:underline px-2 py-1 rounded hover:bg-error/10 transition-colors"
-                        >
-                          Remove
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {listings.map((item) => {
+                    const isOwn = isOwnListing(item);
+                    return (
+                      <tr key={item.accommodation_id || item.id} className="hover:bg-surface-container-low/50 transition-colors">
+                        <td className="py-4 px-6 font-heading font-bold text-on-surface">
+                          {item.title}
+                        </td>
+                        <td className="py-4 px-6">
+                          {renderOwnershipBadge(item)}
+                        </td>
+                        <td className="py-4 px-6 text-on-surface-variant">{item.area}</td>
+                        <td className="py-4 px-6 font-semibold tnum text-primary">
+                          MK {Number(item.rent_mwk || item.price || 0).toLocaleString()}
+                        </td>
+                        <td className="py-4 px-6">
+                          {renderStatusBadge(item)}
+                        </td>
+                        <td className="py-4 px-6 text-right space-x-2">
+                          {isOwn ? (
+                            <>
+                              <Link 
+                                to={`/landlord/listings/${item.accommodation_id || item.id}/edit`} 
+                                className="text-xs font-heading font-bold text-primary hover:underline px-2 py-1 rounded hover:bg-primary/5 transition-colors"
+                              >
+                                Edit
+                              </Link>
+                              <button 
+                                type="button"
+                                onClick={() => handleStatusToggle(item.accommodation_id || item.id, item.availability_status || item.status)}
+                                className="text-xs font-heading font-semibold text-on-surface-variant hover:text-on-surface px-2 py-1 rounded hover:bg-surface-container transition-colors"
+                              >
+                                Toggle Status
+                              </button>
+                              <Link 
+                                to={`/landlord/viewings?property=${item.accommodation_id || item.id}`} 
+                                className="text-xs font-heading font-bold text-secondary hover:underline px-2 py-1 rounded hover:bg-secondary/5 transition-colors"
+                              >
+                                Viewings
+                              </Link>
+                              <button 
+                                type="button"
+                                onClick={() => handleDeleteListing(item.accommodation_id || item.id, item.title)}
+                                className="text-xs font-heading font-bold text-error hover:underline px-2 py-1 rounded hover:bg-error/10 transition-colors"
+                              >
+                                Remove
+                              </button>
+                            </>
+                          ) : (
+                            <Link 
+                              to={`/accommodation/${item.accommodation_id || item.id}`}
+                              className="text-xs font-heading font-semibold text-primary hover:underline px-2.5 py-1 rounded hover:bg-primary/5 transition-colors inline-flex items-center gap-1"
+                            >
+                              <span>View Listing</span>
+                              <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                            </Link>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
 
             {/* Mobile / Tablet Cards View (< 768px) */}
             <div className="md:hidden divide-y divide-outline-variant/20">
-              {listings.map((item) => (
-                <div key={item.accommodation_id || item.id} className="p-4 sm:p-5 flex flex-col gap-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex flex-col min-w-0">
-                      <h3 className="font-heading font-bold text-sm sm:text-base text-on-surface line-clamp-1">
-                        {item.title}
-                      </h3>
-                      <p className="text-xs text-on-surface-variant flex items-center gap-1 mt-0.5">
-                        <span className="material-symbols-outlined text-[14px] text-primary">location_on</span>
-                        <span className="truncate">{item.area}</span>
-                      </p>
+              {listings.map((item) => {
+                const isOwn = isOwnListing(item);
+                return (
+                  <div key={item.accommodation_id || item.id} className="p-4 sm:p-5 flex flex-col gap-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex flex-col min-w-0">
+                        <h3 className="font-heading font-bold text-sm sm:text-base text-on-surface line-clamp-1">
+                          {item.title}
+                        </h3>
+                        <div className="mt-1">
+                          {renderOwnershipBadge(item)}
+                        </div>
+                        <p className="text-xs text-on-surface-variant flex items-center gap-1 mt-1">
+                          <span className="material-symbols-outlined text-[14px] text-primary">location_on</span>
+                          <span className="truncate">{item.area}</span>
+                        </p>
+                      </div>
+                      <div className="shrink-0">
+                        {renderStatusBadge(item)}
+                      </div>
                     </div>
-                    <div className="shrink-0">
-                      {renderStatusBadge(item)}
+
+                    <div className="flex items-center justify-between text-xs pt-1">
+                      <span className="text-on-surface-variant">Monthly Rent:</span>
+                      <span className="font-heading font-bold text-primary tnum text-sm">
+                        MK {Number(item.rent_mwk || item.price || 0).toLocaleString()}
+                      </span>
                     </div>
-                  </div>
 
-                  <div className="flex items-center justify-between text-xs pt-1">
-                    <span className="text-on-surface-variant">Monthly Rent:</span>
-                    <span className="font-heading font-bold text-primary tnum text-sm">
-                      MK {Number(item.rent_mwk || item.price || 0).toLocaleString()}
-                    </span>
+                    {isOwn ? (
+                      <div className="grid grid-cols-4 gap-1.5 pt-2 border-t border-outline-variant/20">
+                        <Link
+                          to={`/landlord/listings/${item.accommodation_id || item.id}/edit`}
+                          className="py-2 px-1 text-center rounded-lg bg-surface-container text-xs font-heading font-bold text-primary active:scale-98 transition-transform"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => handleStatusToggle(item.accommodation_id || item.id, item.availability_status || item.status)}
+                          className="py-2 px-1 text-center rounded-lg bg-surface-container text-xs font-heading font-semibold text-on-surface-variant active:scale-98 transition-transform"
+                        >
+                          Toggle
+                        </button>
+                        <Link
+                          to={`/landlord/viewings?property=${item.accommodation_id || item.id}`}
+                          className="py-2 px-1 text-center rounded-lg bg-secondary/10 text-xs font-heading font-bold text-secondary active:scale-98 transition-transform"
+                        >
+                          Viewings
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteListing(item.accommodation_id || item.id, item.title)}
+                          className="py-2 px-1 text-center rounded-lg bg-error-container/30 text-xs font-heading font-bold text-error active:scale-98 transition-transform"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between pt-2 border-t border-outline-variant/20 text-xs">
+                        <span className="text-on-surface-variant text-[11px] italic">Listed by another landlord</span>
+                        <Link
+                          to={`/accommodation/${item.accommodation_id || item.id}`}
+                          className="py-1.5 px-3 rounded-lg bg-surface-container text-xs font-heading font-semibold text-primary hover:underline inline-flex items-center gap-1"
+                        >
+                          <span>View Listing</span>
+                          <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                        </Link>
+                      </div>
+                    )}
                   </div>
-
-                  <div className="grid grid-cols-4 gap-1.5 pt-2 border-t border-outline-variant/20">
-                    <Link
-                      to={`/landlord/listings/${item.accommodation_id || item.id}/edit`}
-                      className="py-2 px-1 text-center rounded-lg bg-surface-container text-xs font-heading font-bold text-primary active:scale-98 transition-transform"
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => handleStatusToggle(item.accommodation_id || item.id, item.availability_status || item.status)}
-                      className="py-2 px-1 text-center rounded-lg bg-surface-container text-xs font-heading font-semibold text-on-surface-variant active:scale-98 transition-transform"
-                    >
-                      Toggle
-                    </button>
-                    <Link
-                      to={`/landlord/viewings?property=${item.accommodation_id || item.id}`}
-                      className="py-2 px-1 text-center rounded-lg bg-secondary/10 text-xs font-heading font-bold text-secondary active:scale-98 transition-transform"
-                    >
-                      Viewings
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteListing(item.accommodation_id || item.id, item.title)}
-                      className="py-2 px-1 text-center rounded-lg bg-error-container/30 text-xs font-heading font-bold text-error active:scale-98 transition-transform"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </>
         )}

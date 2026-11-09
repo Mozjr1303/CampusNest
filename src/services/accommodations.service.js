@@ -118,7 +118,7 @@ export const accommodationsService = {
   async getAccommodationById(id) {
     try {
       const { data } = await apiClient.get(`/accommodations/${id}`);
-      if (data) return data;
+      if (data) return data.data || data;
     } catch {
       // Fallback to local store
     }

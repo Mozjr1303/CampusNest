@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
+import GoogleMapLocation from '../maps/GoogleMapLocation';
 
 export default function CreateListingForm() {
   const navigate = useNavigate();
@@ -13,7 +14,9 @@ export default function CreateListingForm() {
     rent_mwk: '',
     deposit_mwk: '',
     room_type: 'Single Room',
-    facilities: []
+    facilities: [],
+    latitude: null,
+    longitude: null,
   });
   
   const [images, setImages] = useState([]);
@@ -62,6 +65,8 @@ export default function CreateListingForm() {
         roomType: formData.room_type?.toLowerCase().includes('double') || formData.room_type?.toLowerCase().includes('shared') ? 'shared' : 'single',
         facilities: formData.facilities.map((f) => ({ id: f.toLowerCase().replace(/\s+/g, '_'), label: f, icon: 'check_circle' })),
         images: imagePreviews.length > 0 ? imagePreviews : ['/hero-room.jpg'],
+        latitude: formData.latitude,
+        longitude: formData.longitude,
       };
 
       await apiClient.post('/accommodations', payload);
@@ -135,6 +140,30 @@ export default function CreateListingForm() {
                 className="w-full h-11 px-3.5 border border-outline-variant/40 rounded-xl bg-surface-container-low text-on-surface font-sans text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
+          </div>
+
+          {/* Google Maps Location Picker */}
+          <div className="p-4 rounded-2xl bg-surface-container-low/60 border border-outline-variant/30 flex flex-col gap-2">
+            <div>
+              <h2 className="text-xs sm:text-sm font-heading font-bold text-on-surface">
+                Hostel Location on Google Maps
+              </h2>
+              <p className="text-[11px] text-on-surface-variant mt-0.5">
+                Set the exact geographical pin so university scholars can view your hostel on Google Maps and get direct walking/driving directions.
+              </p>
+            </div>
+            <GoogleMapLocation
+              mode="picker"
+              latitude={formData.latitude}
+              longitude={formData.longitude}
+              title={formData.title || 'Hostel Location'}
+              area={formData.area}
+              universityId={formData.university_nearby?.toLowerCase()}
+              onChangeLocation={(lat, lng) => {
+                setFormData((prev) => ({ ...prev, latitude: lat, longitude: lng }));
+              }}
+              height="300px"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

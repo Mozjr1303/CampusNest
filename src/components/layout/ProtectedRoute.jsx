@@ -2,8 +2,8 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-export function ProtectedRoute({ children }) {
-  const { isAuthenticated, loading } = useAuth();
+export function ProtectedRoute({ children, allowedRoles }) {
+  const { isAuthenticated, loading, user } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -15,7 +15,21 @@ export function ProtectedRoute({ children }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+    const fullPath = location.pathname + location.search;
+    return <Navigate to={`/login?redirect=${encodeURIComponent(fullPath)}`} replace />;
+  }
+
+  if (allowedRoles && allowedRoles.length > 0) {
+    const currentRole = user?.role || (user?.email === 'admin@campusnest.mw' ? 'admin' : 'student');
+    if (!allowedRoles.includes(currentRole)) {
+      if (currentRole === 'admin') {
+        return <Navigate to="/admin" replace />;
+      }
+      if (currentRole === 'landlord') {
+        return <Navigate to="/landlord/dashboard" replace />;
+      }
+      return <Navigate to="/dashboard" replace />;
+    }
   }
 
   return children;

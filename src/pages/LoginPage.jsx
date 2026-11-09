@@ -14,7 +14,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState(null);
 
-  const queryRedirect = new URLSearchParams(location.search).get('redirect') || '/dashboard';
+  const redirectParam = new URLSearchParams(location.search).get('redirect');
+  const isAdminLoginPath = location.pathname === '/admin/login' || location.pathname.startsWith('/admin');
 
   const {
     register,
@@ -23,8 +24,8 @@ export default function LoginPage() {
   } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      identifier: '0991600735',
-      password: 'password123',
+      identifier: isAdminLoginPath ? 'admin@campusnest.mw' : '0991600735',
+      password: isAdminLoginPath ? 'admin123' : 'password123',
       rememberMe: true,
     },
   });
@@ -32,8 +33,20 @@ export default function LoginPage() {
   const onSubmit = async (formData) => {
     setAuthError(null);
     try {
-      await login(formData);
-      navigate(queryRedirect, { replace: true });
+      const response = await login(formData);
+      const userRole = response?.role || response?.user?.role || (formData.identifier?.toLowerCase().includes('admin') ? 'admin' : 'student');
+
+      let target = redirectParam;
+      if (!target) {
+        if (userRole === 'admin' || isAdminLoginPath) {
+          target = '/admin';
+        } else if (userRole === 'landlord') {
+          target = '/landlord/dashboard';
+        } else {
+          target = '/dashboard';
+        }
+      }
+      navigate(target, { replace: true });
     } catch (err) {
       setAuthError(
         err.response?.data?.message ||

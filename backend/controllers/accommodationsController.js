@@ -86,6 +86,8 @@ export const accommodationsController = {
           a.facilities,
           a.availability_status as availabilityStatus,
           a.verification_status as verificationStatus,
+          a.latitude,
+          a.longitude,
           a.created_at as createdAt,
           u.full_name as landlordName,
           u.phone as landlordPhone
@@ -155,6 +157,8 @@ export const accommodationsController = {
           a.facilities,
           a.availability_status as availabilityStatus,
           a.verification_status as verificationStatus,
+          a.latitude,
+          a.longitude,
           a.created_at as createdAt,
           u.full_name as landlordName,
           u.phone as landlordPhone,
@@ -224,7 +228,7 @@ export const accommodationsController = {
     }
   },
 
-  // Landlord's own accommodations & dashboard metrics (SRS FR-08, FR-09, Sec 10.vi)
+  // Landlord's accommodations & dashboard metrics (SRS FR-08, FR-09, Sec 10.vi)
   async getLandlordAccommodations(req, res) {
     try {
       const landlordId = req.user.user_id;
@@ -233,6 +237,7 @@ export const accommodationsController = {
         SELECT 
           a.accommodation_id as id,
           a.landlord_id as landlordId,
+          a.landlord_id,
           a.title,
           a.description,
           a.area,
@@ -243,10 +248,13 @@ export const accommodationsController = {
           a.facilities,
           a.availability_status as availabilityStatus,
           a.verification_status as verificationStatus,
-          a.created_at as createdAt
+          a.latitude,
+          a.longitude,
+          a.created_at as createdAt,
+          u.full_name as landlordName
         FROM accommodations a
-        WHERE a.landlord_id = ?
-        ORDER BY a.created_at DESC
+        LEFT JOIN users u ON a.landlord_id = u.user_id
+        ORDER BY CASE WHEN a.landlord_id = ? THEN 0 ELSE 1 END, a.created_at DESC
       `);
 
       const rows = stmt.all(landlordId);
@@ -272,8 +280,9 @@ export const accommodationsController = {
         };
       });
 
-      const activeCount = listings.filter((l) => l.availabilityStatus === 'available').length;
-      const archivedCount = listings.filter((l) => l.availabilityStatus === 'archived' || l.availabilityStatus === 'unavailable').length;
+      const ownListings = listings.filter((l) => l.landlordId === landlordId || l.landlord_id === landlordId);
+      const activeCount = ownListings.filter((l) => l.availabilityStatus === 'available').length;
+      const archivedCount = ownListings.filter((l) => l.availabilityStatus === 'archived' || l.availabilityStatus === 'unavailable').length;
 
       const viewingsStmt = db.prepare(`
         SELECT COUNT(*) as count 
@@ -311,6 +320,8 @@ export const accommodationsController = {
         roomType = 'single',
         facilities = [],
         images = [],
+        latitude,
+        longitude,
       } = req.body;
 
       if (!title || !area || !university || !price) {
@@ -325,13 +336,15 @@ export const accommodationsController = {
       const isRoleAdmin = req.user.role === 'admin';
       const initialAvailability = isRoleAdmin ? 'available' : 'pending';
       const initialVerification = isRoleAdmin ? 'verified' : 'unverified';
+      const lat = latitude != null && !isNaN(Number(latitude)) ? Number(latitude) : null;
+      const lng = longitude != null && !isNaN(Number(longitude)) ? Number(longitude) : null;
 
       const stmt = db.prepare(`
         INSERT INTO accommodations (
           accommodation_id, landlord_id, title, description, area,
           university_nearby, rent_mwk, deposit_mwk, room_type, facilities,
-          availability_status, verification_status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          availability_status, verification_status, latitude, longitude
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
 
       stmt.run(
@@ -346,7 +359,9 @@ export const accommodationsController = {
         roomType,
         JSON.stringify(facilities),
         initialAvailability,
-        initialVerification
+        initialVerification,
+        lat,
+        lng
       );
 
       // Photos
@@ -397,7 +412,12 @@ export const accommodationsController = {
         roomType,
         facilities,
         images,
+        latitude,
+        longitude,
       } = req.body;
+
+      const lat = latitude !== undefined ? (latitude != null && !isNaN(Number(latitude)) ? Number(latitude) : null) : undefined;
+      const lng = longitude !== undefined ? (longitude != null && !isNaN(Number(longitude)) ? Number(longitude) : null) : undefined;
 
       const stmt = db.prepare(`
         UPDATE accommodations
@@ -408,7 +428,9 @@ export const accommodationsController = {
             rent_mwk = COALESCE(?, rent_mwk),
             deposit_mwk = COALESCE(?, deposit_mwk),
             room_type = COALESCE(?, room_type),
-            facilities = COALESCE(?, facilities)
+            facilities = COALESCE(?, facilities),
+            latitude = CASE WHEN ? IS NOT NULL THEN ? ELSE latitude END,
+            longitude = CASE WHEN ? IS NOT NULL THEN ? ELSE longitude END
         WHERE accommodation_id = ?
       `);
 
@@ -421,6 +443,10 @@ export const accommodationsController = {
         deposit !== undefined ? Number(deposit) : null,
         roomType || null,
         facilities ? JSON.stringify(facilities) : null,
+        lat !== undefined ? lat : null,
+        lat !== undefined ? lat : null,
+        lng !== undefined ? lng : null,
+        lng !== undefined ? lng : null,
         id
       );
 

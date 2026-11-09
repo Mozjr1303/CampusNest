@@ -134,10 +134,11 @@ export default function App() {
                 />
 
                 {/* Administrator Routes (SRS FR-14, FR-15, FR-19, FR-20, Sec 10.ix) */}
+                <Route path="admin/login" element={<LoginPage />} />
                 <Route
                   path="admin"
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['admin']}>
                       <AdminDashboardPage />
                     </ProtectedRoute>
                   }
@@ -145,7 +146,7 @@ export default function App() {
                 <Route
                   path="admin/dashboard"
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['admin']}>
                       <AdminDashboardPage />
                     </ProtectedRoute>
                   }

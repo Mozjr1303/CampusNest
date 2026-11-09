@@ -9,6 +9,7 @@ import { Skeleton } from '../components/ui/Skeleton';
 import { Button } from '../components/ui/Button';
 import { Modal } from '../components/ui/Modal';
 import ViewingRequestForm from '../components/listings/ViewingRequestForm';
+import GoogleMapLocation from '../components/maps/GoogleMapLocation';
 
 export default function ListingDetailPage() {
   const { id } = useParams();
@@ -224,17 +225,35 @@ export default function ListingDetailPage() {
           </h1>
 
           {/* Location & Walking Distance */}
-          <div className="flex flex-col gap-1">
-            <div className="flex flex-wrap items-center gap-2 text-primary font-heading font-semibold text-sm">
-              <span className="material-symbols-outlined text-[18px] text-secondary">distance</span>
-              <span>{listing.area}</span>
-              <span className="text-outline-variant">•</span>
-              <span className="tnum">{listing.distanceToGate}</span>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-wrap items-center gap-2 text-primary font-heading font-semibold text-sm">
+                <span className="material-symbols-outlined text-[18px] text-secondary">distance</span>
+                <span>{listing.area}</span>
+                {listing.distanceToGate && (
+                  <>
+                    <span className="text-outline-variant">•</span>
+                    <span className="tnum">{listing.distanceToGate}</span>
+                  </>
+                )}
+              </div>
+              <div className="flex items-center gap-1.5 text-on-surface-variant text-xs">
+                <span className="material-symbols-outlined text-[15px] text-tertiary">shield</span>
+                <span>General neighborhood mapped — exact gate disclosed after confirming viewing.</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5 text-on-surface-variant text-xs">
-              <span className="material-symbols-outlined text-[15px] text-tertiary">shield</span>
-              <span>General neighborhood mapped — exact gate disclosed after confirming viewing.</span>
-            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById('hostel-location-map');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-primary font-heading text-xs font-bold transition-colors w-fit border border-outline-variant/30 active:scale-95 shadow-2xs"
+            >
+              <span className="material-symbols-outlined text-[16px]">location_on</span>
+              <span>View on Map</span>
+            </button>
           </div>
 
           {/* Pricing Bento Card */}
@@ -320,6 +339,33 @@ export default function ListingDetailPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Hostel Location & Directions (Google Maps) */}
+        <section id="hostel-location-map" className="flex flex-col gap-3 scroll-mt-20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[22px] text-primary">map</span>
+              <h2 className="font-heading font-bold text-lg sm:text-xl text-on-surface">
+                Location & Directions
+              </h2>
+            </div>
+            <span className="text-xs text-on-surface-variant font-medium">
+              {listing.area}
+            </span>
+          </div>
+
+          <div className="rounded-2xl bg-surface-container-low p-4 sm:p-5 border border-outline-variant/40 flex flex-col gap-3">
+            <GoogleMapLocation
+              mode="view"
+              latitude={listing.latitude}
+              longitude={listing.longitude}
+              title={listing.title}
+              area={listing.area}
+              universityId={listing.universityId || listing.university_nearby}
+              height="360px"
+            />
           </div>
         </section>
 

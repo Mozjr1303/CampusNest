@@ -10,7 +10,7 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 2500,
+  timeout: 15000,
 });
 
 // Attach auth token from localStorage if available

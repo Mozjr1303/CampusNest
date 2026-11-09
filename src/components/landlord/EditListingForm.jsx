@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
+import GoogleMapLocation from '../maps/GoogleMapLocation';
 
 export default function EditListingForm() {
   const { id } = useParams(); // Gets the accommodation ID from the URL
@@ -16,7 +17,9 @@ export default function EditListingForm() {
     deposit_mwk: '',
     room_type: 'Single Room',
     facilities: [],
-    availability_status: 'available'
+    availability_status: 'available',
+    latitude: null,
+    longitude: null,
   });
   
   const [loading, setLoading] = useState(true);
@@ -45,6 +48,8 @@ export default function EditListingForm() {
           ? data.facilities.map((f) => (typeof f === 'string' ? f : f.label || f.id))
           : [],
         availability_status: data.availabilityStatus || data.availability_status || 'available',
+        latitude: data.latitude != null ? Number(data.latitude) : null,
+        longitude: data.longitude != null ? Number(data.longitude) : null,
       });
     } catch (err) {
       console.error('Error fetching listing details:', err);
@@ -85,6 +90,8 @@ export default function EditListingForm() {
         deposit: Number(formData.deposit_mwk || 0),
         roomType: formData.room_type,
         facilities: formData.facilities.map((f) => ({ id: f.toLowerCase().replace(/\s+/g, '_'), label: f })),
+        latitude: formData.latitude,
+        longitude: formData.longitude,
       };
 
       await apiClient.patch(`/accommodations/${id}`, payload);
@@ -166,6 +173,30 @@ export default function EditListingForm() {
                 className="w-full h-11 px-3.5 border border-outline-variant/40 rounded-xl bg-surface-container-low text-on-surface font-sans text-sm focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
+          </div>
+
+          {/* Google Maps Location Picker */}
+          <div className="p-4 rounded-2xl bg-surface-container-low/60 border border-outline-variant/30 flex flex-col gap-2">
+            <div>
+              <h2 className="text-xs sm:text-sm font-heading font-bold text-on-surface">
+                Hostel Location on Google Maps
+              </h2>
+              <p className="text-[11px] text-on-surface-variant mt-0.5">
+                Update the geographical pin location on Google Maps for your property. Students use this for instant walking directions.
+              </p>
+            </div>
+            <GoogleMapLocation
+              mode="picker"
+              latitude={formData.latitude}
+              longitude={formData.longitude}
+              title={formData.title || 'Hostel Location'}
+              area={formData.area}
+              universityId={formData.university_nearby?.toLowerCase()}
+              onChangeLocation={(lat, lng) => {
+                setFormData((prev) => ({ ...prev, latitude: lat, longitude: lng }));
+              }}
+              height="300px"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

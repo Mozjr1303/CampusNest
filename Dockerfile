@@ -16,10 +16,10 @@ RUN npm run build
 
 # Default environment
 ENV NODE_ENV=production
-ENV PORT=5000
+ENV PORT=10000
 ENV NODE_OPTIONS="--experimental-sqlite"
 
-EXPOSE 5000
+EXPOSE 10000
 
 # Start unified server
 CMD ["node", "--experimental-sqlite", "backend/server.js"]

@@ -45,6 +45,8 @@ export function initDatabase() {
       facilities TEXT NOT NULL DEFAULT '[]', -- JSON string of facilities
       availability_status TEXT NOT NULL DEFAULT 'available' CHECK (availability_status IN ('available', 'pending', 'unavailable', 'archived')),
       verification_status TEXT NOT NULL DEFAULT 'unverified' CHECK (verification_status IN ('verified', 'unverified', 'flagged')),
+      latitude REAL,
+      longitude REAL,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (landlord_id) REFERENCES users(user_id) ON DELETE CASCADE
     );
@@ -148,6 +150,18 @@ export function initDatabase() {
       FOREIGN KEY (admin_id) REFERENCES users(user_id) ON DELETE CASCADE
     );
   `);
+
+  // Migrate existing tables if latitude/longitude columns are missing
+  try {
+    db.exec('ALTER TABLE accommodations ADD COLUMN latitude REAL;');
+  } catch (_) {
+    // Column already exists
+  }
+  try {
+    db.exec('ALTER TABLE accommodations ADD COLUMN longitude REAL;');
+  } catch (_) {
+    // Column already exists
+  }
 }
 
 export default db;

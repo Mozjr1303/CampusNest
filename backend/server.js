@@ -26,7 +26,7 @@ initDatabase();
 seedIfEmpty().catch(console.error);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || (process.env.NODE_ENV === 'production' ? 10000 : 5000);
 
 // Security Middleware (configured to permit Google Fonts & Icons in production)
 app.use(
@@ -92,7 +92,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`CampusNest Malawi server running on port ${PORT}`);
 });
 

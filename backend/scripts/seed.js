@@ -45,8 +45,9 @@ export async function seed() {
   const insertAcc = db.prepare(`
     INSERT INTO accommodations (
       accommodation_id, landlord_id, title, description, area, university_nearby,
-      rent_mwk, deposit_mwk, room_type, facilities, availability_status, verification_status
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      rent_mwk, deposit_mwk, room_type, facilities, availability_status, verification_status,
+      latitude, longitude
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const insertPhoto = db.prepare(`
@@ -65,6 +66,8 @@ export async function seed() {
       rent: 65000,
       deposit: 65000,
       roomType: 'single',
+      latitude: -15.3789,
+      longitude: 35.3289,
       facilities: [
         { id: 'borehole_water', label: '24/7 Water', desc: 'Solar borehole pump', icon: 'solar_power' },
         { id: 'solar_backup', label: 'Solar Backup', desc: 'Continuous lighting', icon: 'light_mode' },
@@ -88,6 +91,8 @@ export async function seed() {
       rent: 42000,
       deposit: 42000,
       roomType: 'shared',
+      latitude: -15.3860,
+      longitude: 35.3330,
       facilities: [
         { id: 'borehole_water', label: 'Borehole Water', desc: '24/7 reserve tanks', icon: 'water_drop' },
         { id: 'burglar_bars', label: 'Security Grilles', desc: 'Window & door bars', icon: 'grid_view' },
@@ -110,6 +115,8 @@ export async function seed() {
       rent: 55000,
       deposit: 55000,
       roomType: 'single',
+      latitude: -15.9340,
+      longitude: 35.1830,
       facilities: [
         { id: 'borehole_water', label: 'Solar Water', desc: 'Borehole & storage', icon: 'water_drop' },
         { id: 'perimeter_wall', label: 'Perimeter Wall', desc: 'Gated compound', icon: 'fence' },
@@ -131,6 +138,8 @@ export async function seed() {
       rent: 68000,
       deposit: 68000,
       roomType: 'single',
+      latitude: -15.8120,
+      longitude: 35.0450,
       facilities: [
         { id: 'borehole_water', label: '24/7 Water', desc: 'High pressure tanks', icon: 'water_drop' },
         { id: 'wifi', label: 'Fiber Wi-Fi', desc: 'Unlimited student net', icon: 'wifi' },
@@ -152,6 +161,8 @@ export async function seed() {
       rent: 75000,
       deposit: 75000,
       roomType: 'bedsitter',
+      latitude: -15.7990,
+      longitude: 35.0330,
       facilities: [
         { id: 'ensuite_bath', label: 'Inside Shower', desc: 'Private inside bath', icon: 'shower' },
         { id: 'borehole_water', label: 'Borehole', desc: 'Continuous supply', icon: 'water_drop' },
@@ -173,6 +184,8 @@ export async function seed() {
       rent: 48000,
       deposit: 48000,
       roomType: 'single',
+      latitude: -14.1795,
+      longitude: 33.7720,
       facilities: [
         { id: 'borehole_water', label: 'Solar Borehole', desc: 'Clean water pump', icon: 'solar_power' },
         { id: 'perimeter_wall', label: 'High Fence', desc: 'Lockable gate', icon: 'fence' },
@@ -193,6 +206,8 @@ export async function seed() {
       rent: 50000,
       deposit: 50000,
       roomType: 'single',
+      latitude: -11.4340,
+      longitude: 34.0060,
       facilities: [
         { id: 'submetered', label: 'Prepaid Meter', desc: 'Dedicated ESCOM meter', icon: 'bolt' },
         { id: 'burglar_bars', label: 'Burglar Bars', desc: 'Fitted window grilles', icon: 'grid_view' },
@@ -213,6 +228,8 @@ export async function seed() {
       rent: 45000,
       deposit: 45000,
       roomType: 'single',
+      latitude: -14.4780,
+      longitude: 35.2640,
       facilities: [
         { id: 'borehole_water', label: 'Borehole', desc: 'Solar pumped water', icon: 'water_drop' },
         { id: 'study_desk', label: 'Study Table', desc: 'Spacious desk & chair', icon: 'desk' },
@@ -233,6 +250,8 @@ export async function seed() {
       rent: 58000,
       deposit: 58000,
       roomType: 'single',
+      latitude: -15.3800,
+      longitude: 35.3300,
       facilities: [
         { id: 'borehole_water', label: 'Borehole Water', desc: 'Continuous supply', icon: 'water_drop' },
         { id: 'perimeter_wall', label: 'High Fence', desc: 'Lockable gate with guard', icon: 'fence' },
@@ -254,6 +273,8 @@ export async function seed() {
       rent: 46000,
       deposit: 46000,
       roomType: 'shared',
+      latitude: -15.9400,
+      longitude: 35.1900,
       facilities: [
         { id: 'solar_backup', label: 'Solar Lighting', desc: 'Backup lighting during load shedding', icon: 'light_mode' },
         { id: 'study_desk', label: 'Study Desks', desc: 'Fitted study tables', icon: 'desk' },
@@ -279,7 +300,9 @@ export async function seed() {
       acc.roomType,
       JSON.stringify(acc.facilities),
       acc.availability,
-      acc.verification
+      acc.verification,
+      acc.latitude || null,
+      acc.longitude || null
     );
 
     acc.photos.forEach((photoUrl, idx) => {
