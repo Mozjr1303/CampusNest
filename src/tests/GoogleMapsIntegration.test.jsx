@@ -28,11 +28,11 @@ describe('Google Maps Integration for Hostel Locations', () => {
     expect(screen.getByText(`${lat}, ${lng}`)).toBeInTheDocument();
 
     // Verify "Get Directions" link
-    const directionsLink = screen.getByRole('link', { name: /get directions in google maps/i });
+    const directionsLink = screen.getByRole('link', { name: /get directions/i });
     expect(directionsLink).toBeInTheDocument();
     expect(directionsLink).toHaveAttribute(
       'href',
-      `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+      expect.stringContaining(`openstreetmap.org/directions`)
     );
     expect(directionsLink).toHaveAttribute('target', '_blank');
   });

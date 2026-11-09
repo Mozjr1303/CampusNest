@@ -175,14 +175,14 @@ export default function EditListingForm() {
             </div>
           </div>
 
-          {/* Google Maps Location Picker */}
+          {/* OpenStreetMap Location Picker */}
           <div className="p-4 rounded-2xl bg-surface-container-low/60 border border-outline-variant/30 flex flex-col gap-2">
             <div>
               <h2 className="text-xs sm:text-sm font-heading font-bold text-on-surface">
-                Hostel Location on Google Maps
+                Hostel Location on OpenStreetMap
               </h2>
               <p className="text-[11px] text-on-surface-variant mt-0.5">
-                Update the geographical pin location on Google Maps for your property. Students use this for instant walking directions.
+                Update the geographical pin location on OpenStreetMap for your property. Students use this for instant walking directions.
               </p>
             </div>
             <GoogleMapLocation

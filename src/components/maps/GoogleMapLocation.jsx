@@ -42,7 +42,7 @@ const createPinIcon = (isDraggable = false) => {
   });
 };
 
-export default function GoogleMapLocation({
+export function GoogleMapLocation({
   mode = 'view', // 'view' for student accommodation page, 'picker' for landlord form
   latitude,
   longitude,
@@ -230,10 +230,14 @@ export default function GoogleMapLocation({
     }
   };
 
-  // External directions URL: opens turn-by-turn navigation in Google Maps
+  // Open-source directions & map URLs using OpenStreetMap & OSRM
+  const osmViewUrl = hasCoords
+    ? `https://www.openstreetmap.org/?mlat=${coords.lat}&mlon=${coords.lng}#map=16/${coords.lat}/${coords.lng}`
+    : `https://www.openstreetmap.org/search?query=${encodeURIComponent(`${title} ${area} Malawi`)}`;
+
   const directionsUrl = hasCoords
-    ? `https://www.google.com/maps/dir/?api=1&destination=${coords.lat},${coords.lng}`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${title} ${area} Malawi`)}`;
+    ? `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=%3B${coords.lat}%2C${coords.lng}`
+    : `https://www.openstreetmap.org/search?query=${encodeURIComponent(`${title} ${area} Malawi`)}`;
 
   return (
     <div className="flex flex-col gap-3 w-full">
@@ -277,13 +281,14 @@ export default function GoogleMapLocation({
         {/* Top Floating Badge */}
         <div className="absolute top-2.5 right-2.5 z-[400] flex items-center gap-2">
           <a
-            href={directionsUrl}
+            href={osmViewUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-surface/90 backdrop-blur-sm px-2.5 py-1.5 rounded-xl border border-outline-variant/30 shadow-xs text-xs font-heading font-semibold text-primary hover:bg-surface flex items-center gap-1 active:scale-95 transition-transform"
-            title="Open in Google Maps"
+            title="Open in OpenStreetMap"
           >
-            <span>Open in Google Maps</span>
+            <span className="material-symbols-outlined text-[15px] text-primary">map</span>
+            <span>OpenStreetMap</span>
             <span className="material-symbols-outlined text-[14px]">open_in_new</span>
           </a>
         </div>
@@ -358,7 +363,7 @@ export default function GoogleMapLocation({
             className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-primary text-on-primary text-xs font-heading font-bold hover:bg-primary-container active:scale-98 transition-all shadow-xs"
           >
             <span className="material-symbols-outlined text-[16px]">directions</span>
-            <span>Get Directions in Google Maps</span>
+            <span>Get Directions (OpenStreetMap)</span>
             <span className="material-symbols-outlined text-[14px]">open_in_new</span>
           </a>
         </div>
@@ -366,3 +371,6 @@ export default function GoogleMapLocation({
     </div>
   );
 }
+
+export { GoogleMapLocation as OpenStreetMapLocation };
+export default GoogleMapLocation;
